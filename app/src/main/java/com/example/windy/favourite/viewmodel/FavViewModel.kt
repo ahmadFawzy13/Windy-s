@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.windy.data.model.FavCity
 import com.example.windy.data.remote.CurrentWeatherResponse
+import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.data.repo.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,6 +18,9 @@ class FavViewModel(val repo: Repository): ViewModel() {
 
     private val _favCityCurrentWeather : MutableLiveData<CurrentWeatherResponse> = MutableLiveData()
     val favCityCurrentWeather : LiveData<CurrentWeatherResponse> = _favCityCurrentWeather
+
+    private val _fiveDayFavCityWeather: MutableLiveData<FiveDayThreeHourResponse> = MutableLiveData()
+    val fiveDayFavCityWeather: LiveData<FiveDayThreeHourResponse> = _fiveDayFavCityWeather
 
     private val _message : MutableLiveData <String> = MutableLiveData()
     val message : LiveData<String> = _message
@@ -31,6 +35,24 @@ class FavViewModel(val repo: Repository): ViewModel() {
                     _favCityCurrentWeather.postValue(result)
                 }else{
                     _message.postValue("result is null (getRemoteFavCityCurrentWeather)")
+                }
+            }catch (e: Exception){
+                _message.postValue(e::class.simpleName)
+            }
+        }
+    }
+
+    fun getRemoteFiveDayThreeHourWeather(lat:String,lon:String,units:String){
+
+        viewModelScope.launch (Dispatchers.IO){
+
+            try {
+
+                val result = repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
+                if(result != null){
+                    _fiveDayFavCityWeather.postValue(result)
+                }else{
+                    _message.postValue("result is null(getRemoteFiveDay)")
                 }
             }catch (e: Exception){
                 _message.postValue(e::class.simpleName)
@@ -78,8 +100,8 @@ class FavViewModel(val repo: Repository): ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
-
               val result = repo.deleteFavCityLocal(id)
+
                 if(result > 0){
                     val currentList = _favCities.value?.toMutableList() ?: mutableListOf()
                     currentList.remove(favCity)
