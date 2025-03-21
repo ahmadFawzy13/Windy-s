@@ -1,12 +1,10 @@
 package com.example.windy.data.repo
 
 import android.content.Context
-import com.example.windy.data.IWeatherLocalDataSource
 import com.example.windy.data.local.WeatherLocalDataSource
 import com.example.windy.data.model.FavCity
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
-import com.example.windy.data.remote.IWeatherRemoteDataSource
 import com.example.windy.data.remote.WeatherRemoteDataSource
 
 class Repository (private val localDataSource: WeatherLocalDataSource,

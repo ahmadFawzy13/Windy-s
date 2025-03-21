@@ -1,22 +1,19 @@
 package com.example.windy.data.local
 
 import android.content.Context
-import com.example.windy.data.IWeatherLocalDataSource
-import com.example.windy.data.model.City
 import com.example.windy.data.model.FavCity
-import com.example.windy.data.remote.WeatherRemoteDataSource
 
-class WeatherLocalDataSource private constructor(private val weatherDao: WeatherDao): IWeatherLocalDataSource{
+class WeatherLocalDataSource private constructor(private val weatherDao: WeatherDao){
 
-    override suspend fun getFavCitiesLocal():List<FavCity>{
+    suspend fun getFavCitiesLocal():List<FavCity>{
         return weatherDao.getFavCities()
     }
 
-    override suspend fun insertFavCityLocal(favCity: FavCity):Long{
+    suspend fun insertFavCityLocal(favCity: FavCity):Long{
         return weatherDao.insertFavCity(favCity)
     }
 
-    override suspend fun deleteFavCityLocal(id:Int):Int{
+    suspend fun deleteFavCityLocal(id:Int):Int{
         return weatherDao.deleteFavCity(id)
     }
 

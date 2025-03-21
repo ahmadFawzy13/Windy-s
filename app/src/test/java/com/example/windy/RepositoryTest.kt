@@ -29,7 +29,6 @@ class RepositoryTest {
             FavCity()
     )
 
-
     private val mockWeatherRemoteDataSource: WeatherRemoteDataSource = mockk()
     private val mockLocalDataSource: WeatherLocalDataSource = mockk()
     private lateinit var repo : Repository
