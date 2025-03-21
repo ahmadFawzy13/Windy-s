@@ -81,5 +81,5 @@ dependencies {
     testImplementation ("androidx.test:core-ktx:1.6.1")
     testImplementation ("androidx.test.ext:junit-ktx:1.2.1")
     testImplementation ("org.robolectric:robolectric:4.11")
-
+    implementation ("com.google.android.gms:play-services-location:21.3.0")
 }

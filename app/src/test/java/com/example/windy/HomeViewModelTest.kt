@@ -9,7 +9,6 @@ import com.example.windy.data.repo.Repository
 import com.example.windy.home.viewmodel.HomeViewModel
 import com.example.windy.home.viewmodel.MyHomeFactory
 import kotlinx.coroutines.test.runTest
-import getOrAwaitValue
 import org.robolectric.Shadows
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -23,7 +22,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class HomeViewModelTest {
 
     val currentWeatherResponse : CurrentWeatherResponse = CurrentWeatherResponse()
