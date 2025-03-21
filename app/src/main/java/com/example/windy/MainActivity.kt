@@ -30,11 +30,13 @@ class MainActivity : ComponentActivity() {
 
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        /*lifecycleScope.launch(Dispatchers.IO) {
             val repo = Repository.getInstance(this@MainActivity)
             val result = repo.getRemoteWeather("41.3874","2.1686","metric")
+            val resultTwo = repo.getRemoteFiveDayThreeHourWeather("41.3874","2.1686","metric")
             Log.i("TAG", "onCreate: $result")
-        }
-
+            Log.i("TAG", "onCreate: $resultTwo")
+            Log.i("TAG", "onCreate: ${resultTwo?.city}")
+        }*/
     }
 }

@@ -57,7 +57,7 @@ data class City(
 
 @Entity(tableName = "favourites")
 data class FavCity(
-    @PrimaryKey val id:Int,
+    @PrimaryKey val id:Int = 0,
     val name: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,

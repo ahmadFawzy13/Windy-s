@@ -26,7 +26,7 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = repo.getRemoteWeather(lat = lat,lon = lon,units = units)
+                val result = repo.getCurrentWeatherRemote(lat = lat,lon = lon,units = units)
                 if(result != null){
                    _currentWeather.postValue(result)
                 }else{
@@ -44,7 +44,7 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
 
             try {
 
-                val result = repo.getRemoteFiveDayThreeHourWeather(lat = lat, lon = lon, units = units)
+                val result = repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
                 if(result != null){
                     _fiveDayThreeHourWeather.postValue(result)
                 }else{
