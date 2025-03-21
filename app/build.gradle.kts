@@ -78,5 +78,8 @@ dependencies {
     testImplementation ("io.mockk:mockk-agent:1.13.17")
     testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation ("androidx.test:core-ktx:1.6.1")
+    testImplementation ("androidx.test.ext:junit-ktx:1.2.1")
+    testImplementation ("org.robolectric:robolectric:4.11")
 
 }

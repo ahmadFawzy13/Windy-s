@@ -36,6 +36,7 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
                 _responseMessage.postValue(ex::class.simpleName)
             }
         }
+
     }
 
     fun getRemoteFiveDayThreeHourWeather(lat:String,lon:String,units:String){
