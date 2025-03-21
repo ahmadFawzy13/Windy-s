@@ -22,8 +22,8 @@ class FavViewModel(val repo: Repository): ViewModel() {
     private val _fiveDayFavCityWeather: MutableLiveData<FiveDayThreeHourResponse> = MutableLiveData()
     val fiveDayFavCityWeather: LiveData<FiveDayThreeHourResponse> = _fiveDayFavCityWeather
 
-    private val _message : MutableLiveData <String> = MutableLiveData()
-    val message : LiveData<String> = _message
+    private val _responseMessage : MutableLiveData <String> = MutableLiveData()
+    val responseMessage : LiveData<String> = _responseMessage
 
 
     fun getRemoteFavCityCurrentWeather(lat:String,lon:String,units:String){
@@ -34,10 +34,10 @@ class FavViewModel(val repo: Repository): ViewModel() {
                 if(result != null){
                     _favCityCurrentWeather.postValue(result)
                 }else{
-                    _message.postValue("result is null (getRemoteFavCityCurrentWeather)")
+                    _responseMessage.postValue("result is null (getRemoteFavCityCurrentWeather)")
                 }
             }catch (e: Exception){
-                _message.postValue(e::class.simpleName)
+                _responseMessage.postValue(e::class.simpleName)
             }
         }
     }
@@ -52,10 +52,10 @@ class FavViewModel(val repo: Repository): ViewModel() {
                 if(result != null){
                     _fiveDayFavCityWeather.postValue(result)
                 }else{
-                    _message.postValue("result is null(getRemoteFiveDay)")
+                    _responseMessage.postValue("result is null(getRemoteFiveDay)")
                 }
             }catch (e: Exception){
-                _message.postValue(e::class.simpleName)
+                _responseMessage.postValue(e::class.simpleName)
             }
         }
     }
@@ -70,11 +70,11 @@ class FavViewModel(val repo: Repository): ViewModel() {
                 if (!result.isEmpty()){
                     _favCities.postValue(result)
                 }else{
-                    _message.postValue("Empty Local (getLocalFavCities)")
+                    _responseMessage.postValue("Empty Local (getLocalFavCities)")
                 }
 
             }catch (e: Exception){
-                _message.postValue(e::class.simpleName)
+                _responseMessage.postValue(e::class.simpleName)
             }
         }
     }
@@ -85,12 +85,12 @@ class FavViewModel(val repo: Repository): ViewModel() {
             try {
                 val result = repo.insertFavCityLocal(favCity)
                 if(result > 0){
-                    _message.postValue("Saved to favourites")
+                    _responseMessage.postValue("Saved to favourites")
                 }else{
-                    _message.postValue("Problem saving to database")
+                    _responseMessage.postValue("Problem saving to database")
                 }
             }catch (e: Exception){
-                _message.postValue(e::class.simpleName)
+                _responseMessage.postValue(e::class.simpleName)
             }
         }
     }
@@ -106,12 +106,12 @@ class FavViewModel(val repo: Repository): ViewModel() {
                     val currentList = _favCities.value?.toMutableList() ?: mutableListOf()
                     currentList.remove(favCity)
                     _favCities.postValue(currentList)
-                    _message.postValue("Deleted")
+                    _responseMessage.postValue("Deleted")
                 }else{
-                    _message.postValue("Couldn't remove from favourites")
+                    _responseMessage.postValue("Couldn't remove from favourites")
                 }
             }catch (e: Exception){
-                _message.postValue(e::class.simpleName)
+                _responseMessage.postValue(e::class.simpleName)
             }
 
         }

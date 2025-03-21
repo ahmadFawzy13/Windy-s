@@ -39,7 +39,14 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHost
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.windy.data.repo.Repository
+import com.example.windy.favourite.view.FavouriteScreen
+import com.example.windy.favourite.viewmodel.MyFavFactory
+import com.example.windy.home.view.HomeScreen
 import com.example.windy.home.viewmodel.HomeViewModel
 import com.example.windy.home.viewmodel.MyHomeFactory
 import com.example.windy.ui.theme.WindyTheme
@@ -58,7 +65,20 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             locationState = remember{mutableStateOf(Location(LocationManager.GPS_PROVIDER))}
-            LocationUi(currentLocation,locationState.value)
+            val navController = rememberNavController()
+
+            NavHost(navController = navController,
+                startDestination = NavigationRoute.Home) {
+
+                composable<NavigationRoute.Home>{
+                    HomeScreen(navController,viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))))
+                }
+
+                composable <NavigationRoute.Favourite>{
+                    FavouriteScreen(navController,viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
+                }
+
+            }
         }
         lifecycleScope.launch(Dispatchers.IO) {
             val repo = Repository.getInstance(this@MainActivity)

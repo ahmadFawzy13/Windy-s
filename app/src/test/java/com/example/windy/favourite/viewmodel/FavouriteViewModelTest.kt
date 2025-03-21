@@ -5,14 +5,11 @@ import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.data.repo.Repository
 import com.example.windy.getOrAwaitValue
-import com.example.windy.home.viewmodel.HomeViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.CoreMatchers.nullValue
-import org.hamcrest.MatcherAssert
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -46,8 +43,6 @@ class FavouriteViewModelTest {
         } returns fiveDayThreeHourResponse
 
         coEvery {stubRepository.getFavCitiesLocal()} returns cityList
-        coEvery { stubRepository.insertFavCityLocal(FavCity()) } returns 1
-        coEvery { stubRepository.deleteFavCityLocal(21) } returns 1
 
     }
 

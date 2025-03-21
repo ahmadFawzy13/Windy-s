@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
+    kotlin("plugin.serialization") version "2.1.10"
 }
 
 android {
@@ -68,7 +69,7 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
     implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
     implementation ("androidx.compose.material3:material3:1.1.1")
-    val nav_version = "2.8.8"
+    val nav_version = "2.8.9"
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     testImplementation ("junit:junit:4.13.2")
@@ -82,4 +83,7 @@ dependencies {
     testImplementation ("androidx.test.ext:junit-ktx:1.2.1")
     testImplementation ("org.robolectric:robolectric:4.11")
     implementation ("com.google.android.gms:play-services-location:21.3.0")
+    val compose_version = "1.7.8"
+    implementation ("androidx.compose.runtime:runtime-livedata:$compose_version")
+
 }
