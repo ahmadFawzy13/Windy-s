@@ -6,19 +6,20 @@ import com.example.windy.data.model.FavCity
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.data.remote.WeatherRemoteDataSource
+import kotlinx.coroutines.flow.Flow
 
 class Repository (private val localDataSource: WeatherLocalDataSource,
     private val remoteDataSource: WeatherRemoteDataSource){
 
-    suspend fun getCurrentWeatherRemote(lat:String,lon:String,units:String): CurrentWeatherResponse? {
+    fun getCurrentWeatherRemote(lat:String,lon:String,units:String): Flow<CurrentWeatherResponse> {
         return remoteDataSource.getCurrentWeatherRemote(lat,lon,units)
     }
 
-    suspend fun getFiveDayThreeHourWeatherRemote(lat: String, lon: String, units: String): FiveDayThreeHourResponse? {
+    fun getFiveDayThreeHourWeatherRemote(lat: String, lon: String, units: String): Flow<FiveDayThreeHourResponse> {
         return remoteDataSource.getFiveDayThreeHourWeatherRemote(lat,lon,units)
     }
 
-    suspend fun getFavCitiesLocal():List<FavCity>{
+    fun getFavCitiesLocal():Flow<List<FavCity>>{
         return localDataSource.getFavCitiesLocal()
     }
 

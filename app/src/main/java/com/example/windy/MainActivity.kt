@@ -64,7 +64,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
             locationState = remember{mutableStateOf(Location(LocationManager.GPS_PROVIDER))}
+
             val navController = rememberNavController()
 
             NavHost(navController = navController,
@@ -77,7 +79,6 @@ class MainActivity : ComponentActivity() {
                 composable <NavigationRoute.Favourite>{
                     FavouriteScreen(navController,viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
                 }
-
             }
         }
         lifecycleScope.launch(Dispatchers.IO) {
@@ -86,10 +87,17 @@ class MainActivity : ComponentActivity() {
             val resultTwo = repo.getFiveDayThreeHourWeatherRemote("41.3874","2.1686","metric")
             Log.i("TAG", "onCreate: $result")
             Log.i("TAG", "onCreate: $resultTwo")
-            Log.i("TAG", "onCreate: ${resultTwo?.city}")
+            //Log.i("TAG", "onCreate: ${resultTwo.city}")
         }
     }
 
+
+
+
+
+
+
+    //Gps
     override fun onStart() {
         super.onStart()
         if(checkPermissions()){

@@ -29,6 +29,8 @@ class FavouriteViewModelTest {
 
     @Before
     fun setup(){
+
+
         favViewModel = FavViewModel(stubRepository)
 
         coEvery { stubRepository.getCurrentWeatherRemote(
@@ -72,7 +74,6 @@ class FavouriteViewModelTest {
         coVerify { stubRepository.getFiveDayThreeHourWeatherRemote("52.5200", "13.4050", "metric") }
 
     }
-
 
     @Test
     fun getLocalFavCities_LiveDataIsNotNull(){

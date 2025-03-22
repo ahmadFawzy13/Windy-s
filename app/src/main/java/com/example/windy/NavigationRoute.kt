@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 sealed class NavigationRoute {
     @Serializable
     object Home : NavigationRoute()
-
     @Serializable
     object Favourite : NavigationRoute()
 }

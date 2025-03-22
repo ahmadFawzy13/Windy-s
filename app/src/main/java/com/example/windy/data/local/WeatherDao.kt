@@ -5,12 +5,13 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.windy.data.model.City
 import com.example.windy.data.model.FavCity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WeatherDao {
 
     @Query("SELECT * FROM favourites")
-    suspend fun getFavCities(): List <FavCity>
+    fun getFavCities(): Flow<List<FavCity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFavCity(favCity: FavCity) : Long

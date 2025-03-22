@@ -30,12 +30,9 @@ class FavViewModel(val repo: Repository): ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO){
             try{
-                val result = repo.getCurrentWeatherRemote(lat=lat,lon=lon,units=units)
-                if(result != null){
-                    _favCityCurrentWeather.postValue(result)
-                }else{
-                    _responseMessage.postValue("result is null (getRemoteFavCityCurrentWeather)")
-                }
+                 repo.getCurrentWeatherRemote(lat=lat,lon=lon,units=units)
+                     .collect { _favCityCurrentWeather.postValue(it) }
+
             }catch (e: Exception){
                 _responseMessage.postValue(e::class.simpleName)
             }
@@ -48,12 +45,8 @@ class FavViewModel(val repo: Repository): ViewModel() {
 
             try {
 
-                val result = repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
-                if(result != null){
-                    _fiveDayFavCityWeather.postValue(result)
-                }else{
-                    _responseMessage.postValue("result is null(getRemoteFiveDay)")
-                }
+                repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
+                    .collect { _fiveDayFavCityWeather.postValue(it) }
             }catch (e: Exception){
                 _responseMessage.postValue(e::class.simpleName)
             }
@@ -65,16 +58,11 @@ class FavViewModel(val repo: Repository): ViewModel() {
 
             try {
 
-             val result = repo.getFavCitiesLocal()
-
-                if (!result.isEmpty()){
-                    _favCities.postValue(result)
-                }else{
-                    _responseMessage.postValue("Empty Local (getLocalFavCities)")
-                }
+             repo.getFavCitiesLocal()
+                 .collect {_favCities.postValue(it)}
 
             }catch (e: Exception){
-                _responseMessage.postValue(e::class.simpleName)
+                _responseMessage.postValue(e.printStackTrace().toString())
             }
         }
     }

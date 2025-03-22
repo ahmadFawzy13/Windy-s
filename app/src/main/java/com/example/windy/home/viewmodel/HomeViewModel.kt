@@ -26,14 +26,11 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = repo.getCurrentWeatherRemote(lat = lat,lon = lon,units = units)
-                if(result != null){
-                   _currentWeather.postValue(result)
-                }else{
-                    _responseMessage.postValue("result is null (getRemoteCurrentWeather)")
-                }
+               repo.getCurrentWeatherRemote(lat = lat,lon = lon,units = units)
+                   .collect { _currentWeather.postValue(it) }
+
             }catch (ex: Exception){
-                _responseMessage.postValue(ex::class.simpleName)
+                _responseMessage.postValue(ex.printStackTrace().toString())
             }
         }
 
@@ -45,14 +42,10 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
 
             try {
 
-                val result = repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
-                if(result != null){
-                    _fiveDayThreeHourWeather.postValue(result)
-                }else{
-                    _responseMessage.postValue("result is null(getRemoteFiveDay)")
-                }
+                repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
+                    .collect { _fiveDayThreeHourWeather.postValue(it) }
             }catch (e: Exception){
-                _responseMessage.postValue(e::class.simpleName)
+                _responseMessage.postValue(e.printStackTrace().toString())
             }
         }
     }

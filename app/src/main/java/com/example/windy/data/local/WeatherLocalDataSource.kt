@@ -2,10 +2,11 @@ package com.example.windy.data.local
 
 import android.content.Context
 import com.example.windy.data.model.FavCity
+import kotlinx.coroutines.flow.Flow
 
 class WeatherLocalDataSource private constructor(private val weatherDao: WeatherDao){
 
-    suspend fun getFavCitiesLocal():List<FavCity>{
+    fun getFavCitiesLocal():Flow<List<FavCity>>{
         return weatherDao.getFavCities()
     }
 
