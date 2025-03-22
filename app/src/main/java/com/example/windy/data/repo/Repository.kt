@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.Flow
 class Repository (private val localDataSource: WeatherLocalDataSource,
     private val remoteDataSource: WeatherRemoteDataSource){
 
-    fun getCurrentWeatherRemote(lat:String,lon:String,units:String): Flow<CurrentWeatherResponse> {
+    suspend fun getCurrentWeatherRemote(lat:String,lon:String,units:String): Flow<CurrentWeatherResponse> {
         return remoteDataSource.getCurrentWeatherRemote(lat,lon,units)
     }
 
-    fun getFiveDayThreeHourWeatherRemote(lat: String, lon: String, units: String): Flow<FiveDayThreeHourResponse> {
+    suspend fun getFiveDayThreeHourWeatherRemote(lat: String, lon: String, units: String): Flow<FiveDayThreeHourResponse> {
         return remoteDataSource.getFiveDayThreeHourWeatherRemote(lat,lon,units)
     }
 

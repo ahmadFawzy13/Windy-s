@@ -10,6 +10,7 @@ import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.data.repo.Repository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class FavViewModel(val repo: Repository): ViewModel() {
@@ -29,41 +30,26 @@ class FavViewModel(val repo: Repository): ViewModel() {
     fun getRemoteFavCityCurrentWeather(lat:String,lon:String,units:String){
 
         viewModelScope.launch(Dispatchers.IO){
-            try{
                  repo.getCurrentWeatherRemote(lat=lat,lon=lon,units=units)
+                     .catch {_responseMessage.postValue(it.printStackTrace().toString()) }
                      .collect { _favCityCurrentWeather.postValue(it) }
-
-            }catch (e: Exception){
-                _responseMessage.postValue(e::class.simpleName)
-            }
         }
     }
 
     fun getRemoteFiveDayThreeHourWeather(lat:String,lon:String,units:String){
 
         viewModelScope.launch (Dispatchers.IO){
-
-            try {
-
                 repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
+                    .catch {_responseMessage.postValue(it.printStackTrace().toString()) }
                     .collect { _fiveDayFavCityWeather.postValue(it) }
-            }catch (e: Exception){
-                _responseMessage.postValue(e::class.simpleName)
-            }
         }
     }
 
     fun getLocalFavCities(){
         viewModelScope.launch(Dispatchers.IO) {
-
-            try {
-
              repo.getFavCitiesLocal()
+                 .catch {_responseMessage.postValue(it.printStackTrace().toString()) }
                  .collect {_favCities.postValue(it)}
-
-            }catch (e: Exception){
-                _responseMessage.postValue(e.printStackTrace().toString())
-            }
         }
     }
 

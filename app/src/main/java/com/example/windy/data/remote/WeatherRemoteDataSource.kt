@@ -5,11 +5,11 @@ import kotlinx.coroutines.flow.flowOf
 
 class WeatherRemoteDataSource private constructor(private val service: WeatherApi){
 
-    fun getCurrentWeatherRemote(lat:String, lon:String, units:String): Flow<CurrentWeatherResponse> {
+    suspend fun getCurrentWeatherRemote(lat:String, lon:String, units:String): Flow<CurrentWeatherResponse> {
         return flowOf(service.getCurrentWeather(lat = lat,lon = lon, units = units))
     }
 
-    fun getFiveDayThreeHourWeatherRemote(lat: String, lon: String, units: String): Flow<FiveDayThreeHourResponse> {
+    suspend fun getFiveDayThreeHourWeatherRemote(lat: String, lon: String, units: String): Flow<FiveDayThreeHourResponse> {
         return flowOf(service.getFiveDayThreeHourForecast(lat = lat, lon = lon, units = units))
     }
 

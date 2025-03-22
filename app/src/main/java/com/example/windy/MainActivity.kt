@@ -36,8 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHost
 import androidx.navigation.compose.NavHost
@@ -81,13 +83,22 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        val repo = Repository.getInstance(this@MainActivity)
         lifecycleScope.launch(Dispatchers.IO) {
-            val repo = Repository.getInstance(this@MainActivity)
-            val result = repo.getCurrentWeatherRemote("41.3874","2.1686","metric")
-            val resultTwo = repo.getFiveDayThreeHourWeatherRemote("41.3874","2.1686","metric")
-            Log.i("TAG", "onCreate: $result")
-            Log.i("TAG", "onCreate: $resultTwo")
-            //Log.i("TAG", "onCreate: ${resultTwo.city}")
+
+            repeatOnLifecycle (Lifecycle.State.STARTED){
+                launch {
+                    repo.getCurrentWeatherRemote("41.3874","2.1686","metric")
+                        .collect { Log.i("TAG", "onCreate: $it") }
+
+                    repo.getFiveDayThreeHourWeatherRemote("41.3874","2.1686","metric")
+                        .collect { Log.i("TAG", "onCreate: $it") }
+
+                    repo.getFiveDayThreeHourWeatherRemote("41.3874","2.1686","metric")
+                        .collect { Log.i("TAG", "onCreate: ${it.city}") }
+                }
+            }
+
         }
     }
 
@@ -97,7 +108,7 @@ class MainActivity : ComponentActivity() {
 
 
 
-    //Gps
+    ///////////Gps Code
     override fun onStart() {
         super.onStart()
         if(checkPermissions()){
