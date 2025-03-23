@@ -4,67 +4,81 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
+import com.example.windy.Response
 import com.example.windy.data.model.FavCity
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.data.repo.Repository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class FavViewModel(val repo: Repository): ViewModel() {
-    private val _favCities : MutableLiveData<List<FavCity>> = MutableLiveData()
-    val favCities : LiveData <List<FavCity>> = _favCities
+    /*private val _favCities : MutableLiveData<List<FavCity>> = MutableLiveData()
+    val favCities : LiveData <List<FavCity>> = _favCities*/
 
-    private val _favCityCurrentWeather : MutableLiveData<CurrentWeatherResponse> = MutableLiveData()
-    val favCityCurrentWeather : LiveData<CurrentWeatherResponse> = _favCityCurrentWeather
+    private val _favCities = MutableStateFlow<Response<List<FavCity>>>(Response.Loading)
+    val favCities = _favCities.asStateFlow()
 
-    private val _fiveDayFavCityWeather: MutableLiveData<FiveDayThreeHourResponse> = MutableLiveData()
-    val fiveDayFavCityWeather: LiveData<FiveDayThreeHourResponse> = _fiveDayFavCityWeather
+    private val _favCityCurrentWeather = MutableStateFlow<Response<CurrentWeatherResponse>>(Response.Loading)
+    val favCityCurrentWeather =_favCityCurrentWeather.asStateFlow()
 
-    private val _responseMessage : MutableLiveData <String> = MutableLiveData()
-    val responseMessage : LiveData<String> = _responseMessage
+    private val _fiveDayFavCityWeather = MutableStateFlow<Response<FiveDayThreeHourResponse>>(Response.Loading)
+    val fiveDayFavCityWeather = _fiveDayFavCityWeather.asStateFlow()
 
 
     fun getRemoteFavCityCurrentWeather(lat:String,lon:String,units:String){
-
         viewModelScope.launch(Dispatchers.IO){
-                 repo.getCurrentWeatherRemote(lat=lat,lon=lon,units=units)
-                     .catch {_responseMessage.postValue(it.printStackTrace().toString()) }
-                     .collect { _favCityCurrentWeather.postValue(it) }
+               try{
+                   repo.getCurrentWeatherRemote(lat=lat,lon=lon,units=units)
+                       .catch {_favCityCurrentWeather.value = Response.Failure(it.printStackTrace().toString()) }
+                       .collect { _favCityCurrentWeather.value = Response.Success(it) }
+               }catch(e: Exception){
+                   _favCityCurrentWeather.value = Response.Failure(e.printStackTrace().toString())
+               }
         }
     }
 
     fun getRemoteFiveDayThreeHourWeather(lat:String,lon:String,units:String){
-
         viewModelScope.launch (Dispatchers.IO){
+            try {
                 repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
-                    .catch {_responseMessage.postValue(it.printStackTrace().toString()) }
-                    .collect { _fiveDayFavCityWeather.postValue(it) }
+                    .catch {_fiveDayFavCityWeather.value = Response.Failure(it.printStackTrace().toString()) }
+                    .collect { _fiveDayFavCityWeather.value = Response.Success(it) }
+            }catch (e: Exception){
+                _fiveDayFavCityWeather.value = Response.Failure(e.printStackTrace().toString())
+            }
         }
     }
 
     fun getLocalFavCities(){
         viewModelScope.launch(Dispatchers.IO) {
-             repo.getFavCitiesLocal()
-                 .catch {_responseMessage.postValue(it.printStackTrace().toString()) }
-                 .collect {_favCities.postValue(it)}
+            try{
+                repo.getFavCitiesLocal()
+                    .catch {_favCities.value = Response.Failure(it.printStackTrace().toString()) }
+                    .collect {_favCities.value = Response.Success(it)}
+            }catch(e: Exception){
+                _favCities.value = Response.Failure(e.printStackTrace().toString())
+            }
         }
     }
 
     fun insertFavCity(favCity: FavCity){
-
         viewModelScope.launch (Dispatchers.IO){
             try {
                 val result = repo.insertFavCityLocal(favCity)
                 if(result > 0){
-                    _responseMessage.postValue("Saved to favourites")
+                    _favCities.value = Response.SuccessDataBaseOp("Saved to favourites")
                 }else{
-                    _responseMessage.postValue("Problem saving to database")
+                    _favCities.value = Response.Failure("Problem saving to database")
                 }
             }catch (e: Exception){
-                _responseMessage.postValue(e::class.simpleName)
+                _favCities.value = Response.Failure(e.printStackTrace().toString())
             }
         }
     }
@@ -77,17 +91,13 @@ class FavViewModel(val repo: Repository): ViewModel() {
               val result = repo.deleteFavCityLocal(id)
 
                 if(result > 0){
-                    val currentList = _favCities.value?.toMutableList() ?: mutableListOf()
-                    currentList.remove(favCity)
-                    _favCities.postValue(currentList)
-                    _responseMessage.postValue("Deleted")
+                    _favCities.value = Response.SuccessDataBaseOp("Deleted")
                 }else{
-                    _responseMessage.postValue("Couldn't remove from favourites")
+                    _favCities.value = Response.Failure("Couldn't remove from favourites")
                 }
             }catch (e: Exception){
-                _responseMessage.postValue(e::class.simpleName)
+                _favCities.value = Response.Failure(e.printStackTrace().toString())
             }
-
         }
     }
 }

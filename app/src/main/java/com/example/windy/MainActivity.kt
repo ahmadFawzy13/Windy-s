@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
                 startDestination = NavigationRoute.Home) {
 
                 composable<NavigationRoute.Home>{
-                    HomeScreen(navController,viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))))
+                    HomeScreen(navController,viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),currentLocation,locationState.value)
                 }
 
                 composable <NavigationRoute.Favourite>{
@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        val repo = Repository.getInstance(this@MainActivity)
+        /*val repo = Repository.getInstance(this@MainActivity)
         lifecycleScope.launch(Dispatchers.IO) {
 
             repeatOnLifecycle (Lifecycle.State.STARTED){
@@ -98,8 +98,7 @@ class MainActivity : ComponentActivity() {
                         .collect { Log.i("TAG", "onCreate: ${it.city}") }
                 }
             }
-
-        }
+        }*/
     }
 
 
