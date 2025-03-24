@@ -1,7 +1,6 @@
 package com.example.windy.data.remote
 
 import com.example.windy.data.model.Clouds
-import com.example.windy.data.model.Coordinates
 import com.example.windy.data.model.CountryDetails
 import com.example.windy.data.model.Weather
 import com.example.windy.data.model.WeatherDetails

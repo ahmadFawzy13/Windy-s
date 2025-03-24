@@ -1,7 +1,10 @@
 package com.example.windy.utils
 
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -20,14 +23,28 @@ fun formatDate(timestamp: Int?,timeZoneOffset: Int): String {
 
 fun convertUnixTimeToTime(unixTime: Long,timeZoneOffset: Int): String {
     val timeZone = ZoneId.ofOffset("UTC",ZoneOffset.ofTotalSeconds(timeZoneOffset))
+
     val date = Date(unixTime * 1000)
+
     val format = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
     format.timeZone = TimeZone.getTimeZone(timeZone)
+
     return format.format(date)
 }
 
 fun getCountryName(countryCode: String?): String {
-    return countryCode?.let { Locale("", it).displayCountry } ?: "Unknown"
+    Log.i("TAG", "getCountryName: $countryCode")
+    return countryCode?.let { Locale("", it).displayCountry } ?: "HillBilly County"
+}
+
+fun getDayName(dateStringFormat: String): String {
+
+    val dateTime = LocalDateTime.parse(dateStringFormat, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+
+    val dayName = dateTime.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.ENGLISH)
+
+    return dateTime.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.ENGLISH)
 }
 
 

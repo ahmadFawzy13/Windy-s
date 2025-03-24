@@ -17,32 +17,38 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.windy.NavigationRoute
 
 @Composable
 fun MyBottomAppBar(navController: NavController?) {
         BottomAppBar(
+            containerColor = Color(0xFF182354),
             actions = {
                 IconButton(onClick = { navController?.navigate(NavigationRoute.Home) }) {
-                    Icon(Icons.Filled.Home, contentDescription = "Home")
+                    Icon(imageVector = Icons.Filled.Home, contentDescription = "Home",
+                        tint = Color.White)
                 }
                 IconButton(onClick = { navController?.navigate(NavigationRoute.Favourite) }) {
                     Icon(
-                        Icons.Filled.Favorite,
-                        contentDescription = "Localized description",
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = "Fav",
+                        tint = Color.White
                     )
                 }
                 IconButton(onClick = { navController?.navigate(NavigationRoute.Home) }) {
                     Icon(
                         Icons.Filled.Notifications,
-                        contentDescription = "Localized description",
+                        contentDescription = "Alert",
+                        tint = Color.White
                     )
                 }
                 IconButton(onClick = { navController?.navigate(NavigationRoute.Home) }) {
                     Icon(
                         Icons.Filled.Settings,
-                        contentDescription = "Localized description",
+                        contentDescription = "Settings",
+                        tint = Color.White
                     )
                 }
             }
@@ -52,6 +58,7 @@ fun MyBottomAppBar(navController: NavController?) {
 @Composable
 fun MyBottomAppBarWithFab(navController: NavController?) {
     BottomAppBar(
+        containerColor = Color(0xFF182354),
         actions = {
             IconButton(onClick = { navController?.navigate(NavigationRoute.Home) }) {
                 Icon(Icons.Filled.Home, contentDescription = "Localized description")

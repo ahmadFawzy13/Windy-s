@@ -1,6 +1,7 @@
 package com.example.windy
 
 import android.location.Location
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -17,5 +18,6 @@ fun LocationUi(currentLocation: MutableState<String?>, location:Location){
         Text(text = "Longitude is: ${location.longitude}")
         Text(text = "Latitude is: ${location.latitude}")
         Text(text = currentLocation.value?:"")
+        Log.i("TAG", "LocationUi: ${location.latitude} --- ${location.longitude}")
     }
 }

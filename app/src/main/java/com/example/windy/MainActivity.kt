@@ -70,7 +70,6 @@ class MainActivity : ComponentActivity() {
             locationState = remember{mutableStateOf(Location(LocationManager.GPS_PROVIDER))}
 
             val navController = rememberNavController()
-
             NavHost(navController = navController,
                 startDestination = NavigationRoute.Home) {
 
