@@ -75,7 +75,10 @@ class MainActivity : ComponentActivity() {
                 startDestination = NavigationRoute.Home) {
 
                 composable<NavigationRoute.Home>{
-                    HomeScreen(navController,viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),currentLocation,locationState.value)
+                    HomeScreen(navController,
+                        viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),
+                        locationState.value,
+                        "metric")
                 }
 
                 composable <NavigationRoute.Favourite>{

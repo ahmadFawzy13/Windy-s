@@ -21,7 +21,7 @@ fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
     /*favViewModel.getRemoteFiveDayThreeHourWeather()
     favViewModel.favCityCurrentWeather()*/
 
-    val favCities = favViewModel.favCities.observeAsState() //hghyro fl local
+    val favCities = favViewModel.favCities.collectAsStateWithLifecycle() //hghyro fl local
     val favCityCurrentWeather by favViewModel.favCityCurrentWeather.collectAsStateWithLifecycle()
     val fiveDayFavCityWeather by favViewModel.fiveDayFavCityWeather.collectAsStateWithLifecycle()
 
