@@ -2,6 +2,7 @@ package com.example.windy.data.repo
 
 import android.content.Context
 import com.example.windy.data.local.WeatherLocalDataSource
+import com.example.windy.data.model.City
 import com.example.windy.data.model.FavCity
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
@@ -19,12 +20,12 @@ class Repository (private val localDataSource: WeatherLocalDataSource,
         return remoteDataSource.getFiveDayThreeHourWeatherRemote(lat,lon,units)
     }
 
-    fun getFavCitiesLocal():Flow<List<FavCity>>{
+    fun getFavCitiesLocal():Flow<List<City>>{
         return localDataSource.getFavCitiesLocal()
     }
 
-    suspend fun insertFavCityLocal(favCity: FavCity):Long{
-        return localDataSource.insertFavCityLocal(favCity)
+    suspend fun insertFavCityLocal(city: City):Long{
+        return localDataSource.insertFavCityLocal(city)
     }
 
     suspend fun deleteFavCityLocal(id:Int):Int{

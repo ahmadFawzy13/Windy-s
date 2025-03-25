@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 interface WeatherDao {
 
     @Query("SELECT * FROM favourites")
-    fun getFavCities(): Flow<List<FavCity>>
+    fun getFavCities(): Flow<List<City>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertFavCity(favCity: FavCity) : Long
+    suspend fun insertFavCity(city: City) : Long
 
     @Query("DELETE FROM favourites WHERE id = :id")
     suspend fun deleteFavCity(id:Int) : Int

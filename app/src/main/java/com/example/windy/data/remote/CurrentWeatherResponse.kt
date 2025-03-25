@@ -16,5 +16,7 @@ data class CurrentWeatherResponse(
     var sys: CountryDetails? = null,
     @SerializedName("name")
     var cityName: String? = null,
+    @SerializedName("id")
+    var cityId:Int,
     var timezone: Int = 0
 )

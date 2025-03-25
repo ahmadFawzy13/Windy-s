@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.example.windy.Response
+import com.example.windy.data.model.City
 import com.example.windy.data.model.FavCity
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class FavViewModel(val repo: Repository): ViewModel() {
 
-    private val _favCities = MutableStateFlow<Response<List<FavCity>>>(Response.Loading)
+    private val _favCities = MutableStateFlow<Response<List<City>>>(Response.Loading)
     val favCities = _favCities.asStateFlow()
 
     private val _favCityCurrentWeather = MutableStateFlow<Response<CurrentWeatherResponse>>(Response.Loading)
@@ -66,10 +67,10 @@ class FavViewModel(val repo: Repository): ViewModel() {
         }
     }
 
-    fun insertFavCity(favCity: FavCity){
+    fun insertFavCity(city: City){
         viewModelScope.launch (Dispatchers.IO){
             try {
-                val result = repo.insertFavCityLocal(favCity)
+                val result = repo.insertFavCityLocal(city)
                 if(result > 0){
                     _favCities.value = Response.SuccessDataBaseOp("Saved to favourites")
                 }else{
@@ -81,11 +82,12 @@ class FavViewModel(val repo: Repository): ViewModel() {
         }
     }
 
-    fun deleteFavCity(id: Int, favCity: FavCity){
+    fun deleteFavCity(id: Int){
 
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
+
               val result = repo.deleteFavCityLocal(id)
 
                 if(result > 0){

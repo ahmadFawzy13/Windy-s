@@ -44,8 +44,9 @@ data class Wind(
     var gust: Double = 0.0
 )
 
+@Entity(tableName = "favourites")
 data class City(
-    val id: Int,
+    @PrimaryKey val id: Int,
     val name: String = "",
     val coord: Coordinates,
     val country: String = "",
@@ -55,7 +56,7 @@ data class City(
     val sunset: Int = 0
 )
 
-@Entity(tableName = "favourites")
+
 data class FavCity(
     @PrimaryKey val id:Int = 0,
     val name: String = "",

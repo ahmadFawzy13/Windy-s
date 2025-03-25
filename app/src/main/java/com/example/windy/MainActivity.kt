@@ -45,6 +45,8 @@ import androidx.navigation.NavHost
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgs
+import androidx.navigation.toRoute
 import com.example.windy.data.repo.Repository
 import com.example.windy.favourite.view.FavouriteScreen
 import com.example.windy.favourite.view.MapScreen
@@ -72,22 +74,36 @@ class MainActivity : ComponentActivity() {
 
             val navController = rememberNavController()
             NavHost(navController = navController,
-                startDestination = NavigationRoute.Home) {
+                startDestination = NavigationRoute.Favourite) {
 
-                composable<NavigationRoute.Home>{
+                composable<NavigationRoute.HomeWithParameters>{navArgs->
+
+                    val data =navArgs.toRoute<NavigationRoute.HomeWithParameters>()
+                    val favLat = data.favLat
+                    val favLon = data.favLon
+
                     HomeScreen(navController,
                         viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),
                         locationState.value,
-                        "metric")
+                        "metric",favLat,favLon)
                 }
+
+                composable <NavigationRoute.Home>{
+                    HomeScreen(navController,
+                        viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),
+                        locationState.value,"metric")
+                }
+
                 composable <NavigationRoute.Favourite>{
                     FavouriteScreen(navController,viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
                 }
-                composable<NavigationRoute.Map> {
-                    MapScreen(navController, {latLng ->
 
-                    })
+                composable<NavigationRoute.Map> {
+                    MapScreen(navController,
+                        viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),
+                        viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
                 }
+
             }
         }
         /*val repo = Repository.getInstance(this@MainActivity)

@@ -46,15 +46,30 @@ import com.example.windy.utils.getCountryName
 import com.example.windy.utils.getDayName
 
 @Composable
-fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, location:Location,unit:String="metric"){
+fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, location:Location,unit:String="metric",favLat: String = "", favLon:String=""){
 
-    homeViewModel.getRemoteCurrentWeather(location.latitude.toString(),
-        location.longitude.toString(),
-        unit)
+    val defaultLat = location.latitude.toString()
+    val defaultLon = location.longitude.toString()
 
-    homeViewModel.getRemoteFiveDayThreeHourWeather(location.latitude.toString(),
-        location.longitude.toString(),
-        unit)
+    if(!favLat.isEmpty() && !favLon.isEmpty()){
+        homeViewModel.getRemoteCurrentWeather(favLat,
+            favLon,
+            unit)
+
+        homeViewModel.getRemoteFiveDayThreeHourWeather(favLat,
+            favLon,
+            unit)
+    }else{
+        homeViewModel.getRemoteCurrentWeather(defaultLat,
+            defaultLon,
+            unit)
+
+        homeViewModel.getRemoteFiveDayThreeHourWeather(defaultLat,
+            defaultLon,
+            unit)
+    }
+
+
 
     val currentWeather = homeViewModel.currentWeather.collectAsStateWithLifecycle().value
     val fiveDayThreeHourWeather = homeViewModel.fiveDayThreeHourWeather.collectAsStateWithLifecycle().value
@@ -109,17 +124,18 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
 @Composable
 fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayThreeHourResponse: FiveDayThreeHourResponse? = null){
 
-    val date = remember { formatDate(currentWeatherResponse?.dt,
+    val date = formatDate(currentWeatherResponse?.dt,
         currentWeatherResponse?.timezone ?: 0
-    ) }
+    )
 
-    val countryName = remember { getCountryName(currentWeatherResponse?.sys?.country)}
-    val sunrise = remember { convertUnixTimeToTime(currentWeatherResponse?.sys?.sunrise?.toLong() ?: 0,
+    val countryName = getCountryName(currentWeatherResponse?.sys?.country)
+
+    val sunrise = convertUnixTimeToTime(currentWeatherResponse?.sys?.sunrise?.toLong() ?: 0,
         currentWeatherResponse?.timezone ?: 0
-    ) }
-    val sunset = remember { convertUnixTimeToTime(currentWeatherResponse?.sys?.sunset?.toLong() ?: 0,
+    )
+    val sunset = convertUnixTimeToTime(currentWeatherResponse?.sys?.sunset?.toLong() ?: 0,
         currentWeatherResponse?.timezone ?: 0
-    ) }
+    )
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
