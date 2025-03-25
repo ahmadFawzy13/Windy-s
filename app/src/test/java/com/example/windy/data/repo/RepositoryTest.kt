@@ -21,6 +21,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import junit.framework.TestCase.assertNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -41,9 +42,6 @@ class RepositoryTest {
     private val mockWeatherRemoteDataSource: WeatherRemoteDataSource = mockk()
     private val mockLocalDataSource: WeatherLocalDataSource = mockk()
     private lateinit var repo : Repository
-    private lateinit var resultCurrent : CurrentWeatherResponse
-    private lateinit var resultFive : FiveDayThreeHourResponse
-    private lateinit var localList : List<FavCity>
 
     @Before
     fun setup(){
@@ -70,14 +68,12 @@ class RepositoryTest {
         coEvery { mockLocalDataSource.insertFavCityLocal(FavCity()) } returns 1
     }
 
-
     @Test
     fun getCurrentWeatherRemote_returnsRemoteDataFromRemote() = runTest {
 
-        repo.getCurrentWeatherRemote("52.5200", "13.4050", "metric")
-            .collect { resultCurrent = it }
+        val result=repo.getCurrentWeatherRemote("52.5200", "13.4050", "metric").first()
 
-        assertThat(resultCurrent, IsEqual(currentWeatherResponse))
+        assertThat(result, IsEqual(currentWeatherResponse))
 
         coVerify {
             mockWeatherRemoteDataSource.getCurrentWeatherRemote(
@@ -92,10 +88,9 @@ class RepositoryTest {
     @Test
     fun getFiveDayWeatherRemote_returnsRemoteDataFromRemote() = runTest {
 
-        repo.getFiveDayThreeHourWeatherRemote("52.5200", "13.4050", "metric")
-            .collect { resultFive = it }
+       val result =  repo.getFiveDayThreeHourWeatherRemote("52.5200", "13.4050", "metric").first()
 
-         assertThat(resultFive, IsEqual(fiveDayThreeHourResponse))
+         assertThat(result, IsEqual(fiveDayThreeHourResponse))
 
         coVerify {
             mockWeatherRemoteDataSource.getFiveDayThreeHourWeatherRemote(
@@ -108,10 +103,9 @@ class RepositoryTest {
 
     @Test
     fun getFav_returnsLocalDataFromLocal() = runTest {
-         repo.getFavCitiesLocal()
-             .collect { localList = it }
+         val result = repo.getFavCitiesLocal().first()
 
-        assertThat(localList, IsEqual(cityList))
+        assertThat(result, IsEqual(cityList))
         coVerify { mockLocalDataSource.getFavCitiesLocal() }
     }
 
