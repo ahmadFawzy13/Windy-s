@@ -8,4 +8,6 @@ sealed class NavigationRoute {
     object Home : NavigationRoute()
     @Serializable
     object Favourite : NavigationRoute()
+    @Serializable
+    object Map : NavigationRoute()
 }

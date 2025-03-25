@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class FavViewModel(val repo: Repository): ViewModel() {
-    /*private val _favCities : MutableLiveData<List<FavCity>> = MutableLiveData()
-    val favCities : LiveData <List<FavCity>> = _favCities*/
 
     private val _favCities = MutableStateFlow<Response<List<FavCity>>>(Response.Loading)
     val favCities = _favCities.asStateFlow()

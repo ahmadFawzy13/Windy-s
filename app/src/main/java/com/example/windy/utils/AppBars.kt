@@ -61,30 +61,35 @@ fun MyBottomAppBarWithFab(navController: NavController?) {
         containerColor = Color(0xFF182354),
         actions = {
             IconButton(onClick = { navController?.navigate(NavigationRoute.Home) }) {
-                Icon(Icons.Filled.Home, contentDescription = "Localized description")
+                Icon(Icons.Filled.Home,
+                    contentDescription = "Home",
+                    tint = Color.White)
             }
             IconButton(onClick = { navController?.navigate(NavigationRoute.Favourite) }) {
                 Icon(
                     Icons.Filled.Favorite,
-                    contentDescription = "Localized description",
+                    contentDescription = "Fav",
+                    tint = Color.White
                 )
             }
             IconButton(onClick = { navController?.navigate(NavigationRoute.Home) }) {
                 Icon(
                     Icons.Filled.Notifications,
-                    contentDescription = "Localized description",
+                    contentDescription = "Alert",
+                    tint = Color.White
                 )
             }
             IconButton(onClick = { navController?.navigate(NavigationRoute.Home) }) {
                 Icon(
                     Icons.Filled.Settings,
-                    contentDescription = "Localized description",
+                    contentDescription = "Settings",
+                    tint = Color.White
                 )
             }
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController?.navigate(NavigationRoute.Home) },
+                onClick = { navController?.navigate(NavigationRoute.Map) },
                 containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
             ) {

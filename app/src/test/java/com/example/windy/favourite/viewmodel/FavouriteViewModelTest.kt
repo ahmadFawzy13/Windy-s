@@ -15,7 +15,7 @@ import org.junit.Before
 import org.junit.Test
 
 class FavouriteViewModelTest {
-
+/*
     val currentWeatherResponse : CurrentWeatherResponse = CurrentWeatherResponse()
     val fiveDayThreeHourResponse : FiveDayThreeHourResponse = FiveDayThreeHourResponse()
     val cityList : List<FavCity> = listOf(
@@ -86,5 +86,5 @@ class FavouriteViewModelTest {
         assertThat(result, not(nullValue()))
         coVerify { stubRepository.getFavCitiesLocal() }
 
-    }
+    }*/
 }

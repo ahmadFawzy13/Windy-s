@@ -1,10 +1,6 @@
 package com.example.windy.home.view
 
-import android.R
 import android.location.Location
-import android.util.Log
-import androidx.collection.longIntMapOf
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,7 +46,7 @@ import com.example.windy.utils.getCountryName
 import com.example.windy.utils.getDayName
 
 @Composable
-fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, location:Location,unit:String){
+fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, location:Location,unit:String="metric"){
 
     homeViewModel.getRemoteCurrentWeather(location.latitude.toString(),
         location.longitude.toString(),
@@ -95,7 +91,15 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
                     )
                 }
             }else if(currentWeather is Response.Loading || fiveDayThreeHourWeather is Response.Loading){
-                CircularProgressIndicator()
+                Row(modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                    CircularProgressIndicator(modifier = Modifier.size(100.dp))
+
+                }
+
             }
         }
     }

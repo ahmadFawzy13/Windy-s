@@ -34,8 +34,7 @@ fun convertUnixTimeToTime(unixTime: Long,timeZoneOffset: Int): String {
 }
 
 fun getCountryName(countryCode: String?): String {
-    Log.i("TAG", "getCountryName: $countryCode")
-    return countryCode?.let { Locale("", it).displayCountry } ?: "HillBilly County"
+    return countryCode?.let { Locale("", it).displayCountry } ?: ""
 }
 
 fun getDayName(dateStringFormat: String): String {

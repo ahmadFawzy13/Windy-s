@@ -17,8 +17,6 @@ class WeatherLocalDataSource private constructor(private val weatherDao: Weather
     suspend fun deleteFavCityLocal(id:Int):Int{
         return weatherDao.deleteFavCity(id)
     }
-
-
     companion object {
         @Volatile
         private var INSTANCE : WeatherLocalDataSource? = null

@@ -8,19 +8,31 @@ import com.example.windy.data.remote.WeatherRemoteDataSource
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.hamcrest.core.IsEqual
 import org.junit.Before
 import org.junit.Test
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import junit.framework.TestCase.assertNotNull
+import kotlinx.coroutines.test.runTest
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
+import org.junit.After
+import org.junit.Assert
+import org.junit.runner.RunWith
 
 class RepositoryTest {
 
-    val currentWeatherResponse : CurrentWeatherResponse = CurrentWeatherResponse()
-    val fiveDayThreeHourResponse : FiveDayThreeHourResponse = FiveDayThreeHourResponse()
-
-    val cityList : List<FavCity> = listOf(
+    private val currentWeatherResponse : CurrentWeatherResponse = CurrentWeatherResponse()
+    private val fiveDayThreeHourResponse : FiveDayThreeHourResponse = FiveDayThreeHourResponse()
+    private val cityList : List<FavCity> = listOf(
         FavCity(),
         FavCity(),
         FavCity()
@@ -29,26 +41,31 @@ class RepositoryTest {
     private val mockWeatherRemoteDataSource: WeatherRemoteDataSource = mockk()
     private val mockLocalDataSource: WeatherLocalDataSource = mockk()
     private lateinit var repo : Repository
-
+    private lateinit var resultCurrent : CurrentWeatherResponse
+    private lateinit var resultFive : FiveDayThreeHourResponse
+    private lateinit var localList : List<FavCity>
 
     @Before
     fun setup(){
         repo = Repository(mockLocalDataSource,mockWeatherRemoteDataSource)
+
         coEvery {
             mockWeatherRemoteDataSource.getCurrentWeatherRemote(
                 "52.5200",
                 "13.4050",
                 "metric"
             )
-        } returns currentWeatherResponse
+        } returns flowOf(currentWeatherResponse)
+
         coEvery {
             mockWeatherRemoteDataSource.getFiveDayThreeHourWeatherRemote(
                 "52.5200",
                 "13.4050",
                 "metric"
             )
-        } returns fiveDayThreeHourResponse
-        coEvery { mockLocalDataSource.getFavCitiesLocal() } returns cityList
+        } returns flowOf(fiveDayThreeHourResponse)
+
+        coEvery { mockLocalDataSource.getFavCitiesLocal() } returns flowOf(cityList)
         coEvery { mockLocalDataSource.deleteFavCityLocal(654) } returns 1
         coEvery { mockLocalDataSource.insertFavCityLocal(FavCity()) } returns 1
     }
@@ -56,8 +73,12 @@ class RepositoryTest {
 
     @Test
     fun getCurrentWeatherRemote_returnsRemoteDataFromRemote() = runTest {
-        var result = repo.getCurrentWeatherRemote("52.5200", "13.4050", "metric")
-        MatcherAssert.assertThat(result, IsEqual(currentWeatherResponse))
+
+        repo.getCurrentWeatherRemote("52.5200", "13.4050", "metric")
+            .collect { resultCurrent = it }
+
+        assertThat(resultCurrent, IsEqual(currentWeatherResponse))
+
         coVerify {
             mockWeatherRemoteDataSource.getCurrentWeatherRemote(
                 "52.5200",
@@ -65,12 +86,17 @@ class RepositoryTest {
                 "metric"
             )
         }
+
     }
 
     @Test
     fun getFiveDayWeatherRemote_returnsRemoteDataFromRemote() = runTest {
-        var result = repo.getFiveDayThreeHourWeatherRemote("52.5200", "13.4050", "metric")
-        MatcherAssert.assertThat(result, IsEqual(fiveDayThreeHourResponse))
+
+        repo.getFiveDayThreeHourWeatherRemote("52.5200", "13.4050", "metric")
+            .collect { resultFive = it }
+
+         assertThat(resultFive, IsEqual(fiveDayThreeHourResponse))
+
         coVerify {
             mockWeatherRemoteDataSource.getFiveDayThreeHourWeatherRemote(
                 "52.5200",
@@ -82,22 +108,24 @@ class RepositoryTest {
 
     @Test
     fun getFav_returnsLocalDataFromLocal() = runTest {
-        var result = repo.getFavCitiesLocal()
-        MatcherAssert.assertThat(result, IsEqual(cityList))
+         repo.getFavCitiesLocal()
+             .collect { localList = it }
+
+        assertThat(localList, IsEqual(cityList))
         coVerify { mockLocalDataSource.getFavCitiesLocal() }
     }
 
     @Test
     fun deleteFav_returnsSuccessCodeFromLocal() = runTest {
         var result = repo.deleteFavCityLocal(654)
-        MatcherAssert.assertThat(result, Matchers.greaterThan(0))
+        assertThat(result, Matchers.greaterThan(0))
         coVerify { mockLocalDataSource.deleteFavCityLocal(654) }
     }
 
     @Test
     fun insertFav_returnsSuccessCodeFromLocal() = runTest {
         var result = repo.insertFavCityLocal(FavCity())
-        MatcherAssert.assertThat(result, Matchers.greaterThan(0))
+        assertThat(result, Matchers.greaterThan(0))
         coVerify { mockLocalDataSource.insertFavCityLocal(FavCity()) }
     }
 }

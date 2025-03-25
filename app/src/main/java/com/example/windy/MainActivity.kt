@@ -47,6 +47,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.windy.data.repo.Repository
 import com.example.windy.favourite.view.FavouriteScreen
+import com.example.windy.favourite.view.MapScreen
 import com.example.windy.favourite.viewmodel.MyFavFactory
 import com.example.windy.home.view.HomeScreen
 import com.example.windy.home.viewmodel.HomeViewModel
@@ -79,9 +80,13 @@ class MainActivity : ComponentActivity() {
                         locationState.value,
                         "metric")
                 }
-
                 composable <NavigationRoute.Favourite>{
                     FavouriteScreen(navController,viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
+                }
+                composable<NavigationRoute.Map> {
+                    MapScreen(navController, {latLng ->
+
+                    })
                 }
             }
         }

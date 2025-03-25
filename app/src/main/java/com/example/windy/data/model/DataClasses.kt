@@ -62,7 +62,6 @@ data class FavCity(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val country: String = "",
-    val population: Int = 0,
     val timezone: Int = 0,
     val sunrise: Int = 0,
     val sunset: Int = 0
