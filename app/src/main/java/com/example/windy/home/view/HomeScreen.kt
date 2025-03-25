@@ -77,7 +77,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
         {
 
             if(currentWeather is Response.Success && fiveDayThreeHourWeather is Response.Success){
-
                 HomeWeather(
                     currentWeather.data,
                     fiveDayThreeHourWeather.data)
