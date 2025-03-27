@@ -12,6 +12,8 @@ import com.example.windy.data.model.FavCity
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.data.repo.Repository
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +25,9 @@ class FavViewModel(val repo: Repository): ViewModel() {
 
     private val _favCities = MutableStateFlow<Response<List<City>>>(Response.Loading)
     val favCities = _favCities.asStateFlow()
+
+    private val _searchPlaceCoordinates = MutableStateFlow<Response<LatLng>>(Response.Loading)
+    val searchPlaceCoordinates = _searchPlaceCoordinates.asStateFlow()
 
     private val _favCityCurrentWeather = MutableStateFlow<Response<CurrentWeatherResponse>>(Response.Loading)
     val favCityCurrentWeather =_favCityCurrentWeather.asStateFlow()
@@ -52,6 +57,18 @@ class FavViewModel(val repo: Repository): ViewModel() {
             }catch (e: Exception){
                 _fiveDayFavCityWeather.value = Response.Failure(e.printStackTrace().toString())
             }
+        }
+    }
+
+    fun getPlaceOnMap(searchText:String,placesClient: PlacesClient){
+        try{
+            viewModelScope.launch {
+                repo.getPlaceOnMap(searchText,placesClient)
+                    .catch { _searchPlaceCoordinates.value = Response.Failure(it.printStackTrace().toString()) }
+                    .collect { _searchPlaceCoordinates.value = Response.Success(it) }
+            }
+        }catch(e: Exception){
+            _searchPlaceCoordinates.value = Response.Failure("Error Connecting To Places Api")
         }
     }
 
@@ -88,7 +105,7 @@ class FavViewModel(val repo: Repository): ViewModel() {
 
             try {
 
-              val result = repo.deleteFavCityLocal(id)
+                val result = repo.deleteFavCityLocal(id)
 
                 if(result > 0){
                     _favCities.value = Response.SuccessDataBaseOp("Deleted")

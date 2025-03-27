@@ -68,7 +68,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
     implementation ("com.github.bumptech.glide:compose:1.0.0-beta01")
-    implementation ("androidx.compose.material3:material3:1.1.1")
+    implementation ("androidx.compose.material3:material3:1.3.1")
     val nav_version = "2.8.9"
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
@@ -88,5 +88,7 @@ dependencies {
     implementation ("com.google.maps.android:maps-compose:4.3.0")
     implementation ("com.google.android.gms:play-services-maps:19.1.0")
     implementation ("com.google.android.gms:play-services-location:21.3.0")
+    implementation ("com.google.android.libraries.places:places:4.2.0")
+    implementation ("com.google.android.material:material:1.12.0")
 
 }

@@ -1,7 +1,7 @@
 package com.example.windy.favourite.view
 
+
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Favorite
@@ -28,6 +30,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -37,7 +40,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,16 +51,17 @@ import com.example.windy.NavigationRoute
 import com.example.windy.Response
 import com.example.windy.data.model.City
 import com.example.windy.favourite.viewmodel.FavViewModel
-import com.example.windy.home.viewmodel.HomeViewModel
-import com.example.windy.utils.MyBottomAppBarWithFab
+import com.example.windy.utils.FloatingActionB
+import com.example.windy.utils.NavBar
 import com.example.windy.utils.getCountryName
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-
 
 @Composable
 fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
@@ -65,8 +71,10 @@ fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState)},
-        bottomBar = { MyBottomAppBarWithFab(navController) },
-        containerColor = Color(0xFF182354)
+        bottomBar = { NavBar(navController) },
+        containerColor = Color(0xFF182354),
+        floatingActionButton = {FloatingActionB(navController)}
+
     )
     {contentPadding ->
         Column(
@@ -126,8 +134,8 @@ fun FavCities(city: City,favViewModel: FavViewModel,navController: NavController
     Card(modifier = Modifier
         .padding(10.dp)
         .fillMaxWidth()
-        .clickable{
-            navController.navigate(NavigationRoute.HomeWithParameters(lat,lon))
+        .clickable {
+            navController.navigate(NavigationRoute.HomeWithParameters(lat, lon))
         },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
@@ -167,18 +175,57 @@ fun FavCities(city: City,favViewModel: FavViewModel,navController: NavController
 }
 
 @Composable
-fun MapScreen(navController: NavController?, homeViewModel: HomeViewModel, favViewModel: FavViewModel) {
+fun MapScreen(favViewModel: FavViewModel) {
 
-    val fiveDayThreeHourWeather = favViewModel.fiveDayFavCityWeather.collectAsStateWithLifecycle().value
+    val fiveDayThreeHourWeather = favViewModel.
+    fiveDayFavCityWeather.collectAsStateWithLifecycle().value
 
+    val searchPlaceCoordinates = favViewModel.searchPlaceCoordinates.
+    collectAsStateWithLifecycle().value
+
+    var searchText by remember { mutableStateOf("") }
     var selectedLatLng by remember { mutableStateOf<LatLng?>(null) }
+
+    val context = LocalContext.current.applicationContext
+
+    if (!Places.isInitialized()) {
+        Places.initialize(context, "AIzaSyCvScI24VvzEEkv6EJQCQw7Ovv-_jha5GA")
+    }
+
+    val places = remember { Places.createClient(context) }
+
+    favViewModel.getPlaceOnMap(searchText,places)
+
+
 
 
     Box(modifier = Modifier.fillMaxSize()) {
-        LocationPickerMap { latLng ->
-            selectedLatLng = latLng
-            // Fetch weather data using latLng.latitude/longitude
-        }
+        LocationPickerMap(
+            selectedLocation = selectedLatLng,
+            onLocationSelected = { latLng ->
+                selectedLatLng = latLng
+            }
+        )
+
+
+        TextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
+            keyboardActions = KeyboardActions(onGo = {
+
+                if(searchPlaceCoordinates is Response.Success){
+                    selectedLatLng   = searchPlaceCoordinates.data
+                }
+
+            }),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 50.dp)
+                .padding(16.dp),
+            label = { Text("Search for a place...") },
+            singleLine = true
+        )
 
         selectedLatLng?.let { latLng ->
 
@@ -224,30 +271,37 @@ fun MapScreen(navController: NavController?, homeViewModel: HomeViewModel, favVi
     }
 }
 
+
 @Composable
 fun LocationPickerMap(
+    selectedLocation :LatLng?,
     onLocationSelected: (LatLng) -> Unit // Callback when user taps map
 ) {
-    // Default position (e.g., Singapore)
-    val defaultLocation = remember { LatLng(30.0381736, 30.9793528) }
 
-    // Camera position state
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(defaultLocation, 10f)
+    val defaultLocation = remember {LatLng(30.0381736, 30.9793528) }
+
+    var currentLocation = selectedLocation ?: defaultLocation
+
+    var cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(currentLocation, 10f)
     }
 
-    // Selected marker
-    var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
+    LaunchedEffect(currentLocation) {
+        selectedLocation?.let {
+            cameraPositionState.animate(
+                update = CameraUpdateFactory.newLatLngZoom(currentLocation,10f)
+            )
+        }
+    }
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         onMapClick = { latLng ->
-            selectedLocation = latLng
-            onLocationSelected(latLng) // Return coordinates
+            onLocationSelected(latLng)
         }
     ) {
-        // Add marker if a location is selected
+
         selectedLocation?.let { location ->
             Marker(
                 state = MarkerState(position = location),

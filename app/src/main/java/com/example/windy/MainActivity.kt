@@ -55,6 +55,7 @@ import com.example.windy.home.view.HomeScreen
 import com.example.windy.home.viewmodel.HomeViewModel
 import com.example.windy.home.viewmodel.MyHomeFactory
 import com.example.windy.ui.theme.WindyTheme
+import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -68,6 +69,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
 
             locationState = remember{mutableStateOf(Location(LocationManager.GPS_PROVIDER))}
@@ -76,9 +78,9 @@ class MainActivity : ComponentActivity() {
             NavHost(navController = navController,
                 startDestination = NavigationRoute.Favourite) {
 
-                composable<NavigationRoute.HomeWithParameters>{navArgs->
+                composable<NavigationRoute.HomeWithParameters>{params->
 
-                    val data =navArgs.toRoute<NavigationRoute.HomeWithParameters>()
+                    val data =params.toRoute<NavigationRoute.HomeWithParameters>()
                     val favLat = data.favLat
                     val favLon = data.favLon
 
@@ -99,36 +101,12 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable<NavigationRoute.Map> {
-                    MapScreen(navController,
-                        viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),
-                        viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
+                    MapScreen(viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
                 }
 
             }
         }
-        /*val repo = Repository.getInstance(this@MainActivity)
-        lifecycleScope.launch(Dispatchers.IO) {
-
-            repeatOnLifecycle (Lifecycle.State.STARTED){
-                launch {
-                    repo.getCurrentWeatherRemote("41.3874","2.1686","metric")
-                        .collect { Log.i("TAG", "onCreate: $it") }
-
-                    repo.getFiveDayThreeHourWeatherRemote("41.3874","2.1686","metric")
-                        .collect { Log.i("TAG", "onCreate: $it") }
-
-                    repo.getFiveDayThreeHourWeatherRemote("41.3874","2.1686","metric")
-                        .collect { Log.i("TAG", "onCreate: ${it.city}") }
-                }
-            }
-        }*/
     }
-
-
-
-
-
-
 
     ///////////Gps Code
     override fun onStart() {

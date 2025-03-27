@@ -7,6 +7,8 @@ import com.example.windy.data.model.FavCity
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.data.remote.WeatherRemoteDataSource
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.flow.Flow
 
 class Repository (private val localDataSource: WeatherLocalDataSource,
@@ -20,6 +22,10 @@ class Repository (private val localDataSource: WeatherLocalDataSource,
         return remoteDataSource.getFiveDayThreeHourWeatherRemote(lat,lon,units)
     }
 
+    suspend fun getPlaceOnMap(searchText:String,placesClient: PlacesClient) :Flow<LatLng>{
+        return remoteDataSource.getPlaceOnMap(searchText,placesClient)
+    }
+
     fun getFavCitiesLocal():Flow<List<City>>{
         return localDataSource.getFavCitiesLocal()
     }
@@ -31,7 +37,6 @@ class Repository (private val localDataSource: WeatherLocalDataSource,
     suspend fun deleteFavCityLocal(id:Int):Int{
         return localDataSource.deleteFavCityLocal(id)
     }
-
 
     companion object{
         @Volatile

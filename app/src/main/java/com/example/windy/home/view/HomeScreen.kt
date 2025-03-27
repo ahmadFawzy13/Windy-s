@@ -38,7 +38,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.windy.Response
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
-import com.example.windy.utils.MyBottomAppBar
+import com.example.windy.utils.NavBar
 import com.example.windy.utils.WeatherIconLink
 import com.example.windy.utils.convertUnixTimeToTime
 import com.example.windy.utils.formatDate
@@ -51,25 +51,25 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
     val defaultLat = location.latitude.toString()
     val defaultLon = location.longitude.toString()
 
-    if(!favLat.isEmpty() && !favLon.isEmpty()){
-        homeViewModel.getRemoteCurrentWeather(favLat,
-            favLon,
-            unit)
+    LaunchedEffect(location.latitude) {
+        if(!favLat.isEmpty() && !favLon.isEmpty()){
+            homeViewModel.getRemoteCurrentWeather(favLat,
+                favLon,
+                unit)
 
-        homeViewModel.getRemoteFiveDayThreeHourWeather(favLat,
-            favLon,
-            unit)
-    }else{
-        homeViewModel.getRemoteCurrentWeather(defaultLat,
-            defaultLon,
-            unit)
+            homeViewModel.getRemoteFiveDayThreeHourWeather(favLat,
+                favLon,
+                unit)
+        }else{
+            homeViewModel.getRemoteCurrentWeather(defaultLat,
+                defaultLon,
+                unit)
 
-        homeViewModel.getRemoteFiveDayThreeHourWeather(defaultLat,
-            defaultLon,
-            unit)
+            homeViewModel.getRemoteFiveDayThreeHourWeather(defaultLat,
+                defaultLon,
+                unit)
+        }
     }
-
-
 
     val currentWeather = homeViewModel.currentWeather.collectAsStateWithLifecycle().value
     val fiveDayThreeHourWeather = homeViewModel.fiveDayThreeHourWeather.collectAsStateWithLifecycle().value
@@ -77,7 +77,7 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
 
     Scaffold(
         snackbarHost = {SnackbarHost(remember { SnackbarHostState() })},
-        bottomBar = {MyBottomAppBar(navController)},
+        bottomBar = { NavBar(navController) },
         containerColor = Color(0xFF182354)
 
     )
@@ -124,18 +124,12 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
 @Composable
 fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayThreeHourResponse: FiveDayThreeHourResponse? = null){
 
-    val date = formatDate(currentWeatherResponse?.dt,
-        currentWeatherResponse?.timezone ?: 0
-    )
+    val date = formatDate(currentWeatherResponse?.dt)
 
     val countryName = getCountryName(currentWeatherResponse?.sys?.country)
 
-    val sunrise = convertUnixTimeToTime(currentWeatherResponse?.sys?.sunrise?.toLong() ?: 0,
-        currentWeatherResponse?.timezone ?: 0
-    )
-    val sunset = convertUnixTimeToTime(currentWeatherResponse?.sys?.sunset?.toLong() ?: 0,
-        currentWeatherResponse?.timezone ?: 0
-    )
+    val sunrise = convertUnixTimeToTime(currentWeatherResponse?.sys?.sunrise?.toLong() ?: 0)
+    val sunset = convertUnixTimeToTime(currentWeatherResponse?.sys?.sunset?.toLong() ?: 0)
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -240,9 +234,7 @@ fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayTh
                                 ) {
                                     Text(
                                         text = convertUnixTimeToTime(
-                                            hourlyWeather.dateAndTime.toLong(),
-                                            fiveDayThreeHourResponse?.city?.timezone ?: 0
-                                        ),
+                                            hourlyWeather.dateAndTime.toLong()),
                                         color = Color.White,
                                         fontSize = 14.sp
                                     )
@@ -379,9 +371,7 @@ fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayTh
                         .padding(5.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly)
                     {
-                        Text(text = formatDate(dailyWeather.dateAndTime,
-                            fiveDayThreeHourResponse?.city?.timezone ?: 0
-                        ), color = Color.White,
+                        Text(text = formatDate(dailyWeather.dateAndTime), color = Color.White,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold)
 

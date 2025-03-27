@@ -1,6 +1,15 @@
 package com.example.windy.utils
 
 import android.util.Log
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -12,24 +21,16 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-fun formatDate(timestamp: Int?,timeZoneOffset: Int): String {
-    val timeZone = ZoneId.ofOffset("UTC",ZoneOffset.ofTotalSeconds(timeZoneOffset))
-
+fun formatDate(timestamp: Int?): String {
     val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM")
-        .withZone(timeZone)
+        .withZone(ZoneId.systemDefault())
 
     return formatter.format(Instant.ofEpochSecond(timestamp?.toLong() ?: 0))
 }
 
-fun convertUnixTimeToTime(unixTime: Long,timeZoneOffset: Int): String {
-    val timeZone = ZoneId.ofOffset("UTC",ZoneOffset.ofTotalSeconds(timeZoneOffset))
-
+fun convertUnixTimeToTime(unixTime: Long): String {
     val date = Date(unixTime * 1000)
-
     val format = SimpleDateFormat("hh:mm a", Locale.getDefault())
-
-    format.timeZone = TimeZone.getTimeZone(timeZone)
-
     return format.format(date)
 }
 
@@ -45,5 +46,6 @@ fun getDayName(dateStringFormat: String): String {
 
     return dateTime.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.ENGLISH)
 }
+
 
 

@@ -32,6 +32,11 @@ import org.hamcrest.core.IsEqual
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.example.windy.Response
+import com.example.windy.data.model.Clouds
+import com.example.windy.data.model.CountryDetails
+import com.example.windy.data.model.Weather
+import com.example.windy.data.model.WeatherDetails
+import com.example.windy.data.model.Wind
 import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -48,7 +53,18 @@ import org.junit.Assert
 
 class HomeViewModelTest {
 
-    val currentWeatherResponse : CurrentWeatherResponse = CurrentWeatherResponse()
+    val currentWeatherResponse = CurrentWeatherResponse(
+        weather = listOf(Weather(id = 800, main = "Clear", description = "clear sky", icon = "01d")),
+        weatherDetails = WeatherDetails(temp = 25.0, pressure = 1012, humidity = 60),
+        wind = Wind(speed = 5.0, deg = 180),
+        clouds = Clouds(all = 10),
+        dt = 1672531200,
+        sys = CountryDetails(country = "US", sunrise = 1672500000, sunset = 1672550000),
+        cityName = "New York",
+        cityId = 5128581,
+        timezone = -18000
+    )
+
     val fiveDayThreeHourResponse : FiveDayThreeHourResponse = FiveDayThreeHourResponse()
 
     private lateinit var stubRepository : Repository
@@ -73,9 +89,9 @@ class HomeViewModelTest {
       //  Dispatchers.setMain(StandardTestDispatcher())
     }
 
-  /*  @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     @After
-    fun tearDown() = Dispatchers.resetMain()*/
+    fun tearDown() = Dispatchers.resetMain()
 
 
     @Test
