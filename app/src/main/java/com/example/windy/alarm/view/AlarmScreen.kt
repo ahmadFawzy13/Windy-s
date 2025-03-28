@@ -1,5 +1,6 @@
 package com.example.windy.alarm.view
 
+import android.app.AlarmManager
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.windy.AlarmScheduler
 import com.example.windy.NavigationRoute
 import com.example.windy.Response
 import com.example.windy.SharedCityName
@@ -65,14 +67,17 @@ import kotlin.math.log
 fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
     alarmViewModel.getAlarms()
     val snackBarHostState = remember { SnackbarHostState() }
+    val hour = remember { mutableIntStateOf(0) }
+    val minute = remember { mutableIntStateOf(0) }
     val alarms = alarmViewModel.alarms.collectAsStateWithLifecycle().value
     var showTimePicker by remember {mutableStateOf(false)}
     var cityName by remember { mutableStateOf("") }
     cityName = SharedCityName.cityName
+    val context = LocalContext.current
+    val alarmScheduler = remember { AlarmScheduler(context) }
 
 
     LaunchedEffect(alarms) {
-        Log.i("TAG", "AlarmScreen: alarms updated")
             if (alarms is Response.Message) {
                 snackBarHostState.showSnackbar(
                     message = alarms.msg,
@@ -80,7 +85,6 @@ fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
             )
         }
     }
-
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState)},
@@ -109,8 +113,7 @@ fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
                 alarms is Response.Success ->{
                     LazyColumn{
                         items (alarms.data.size) {
-                            Log.i("TAG", "AlarmScreen: ${alarms.data}")
-                            AlarmsList(alarms.data[it],cityName,alarmViewModel)
+                            AlarmsList(alarms.data[it],cityName,alarmViewModel,alarmScheduler)
                         }
                     }
                 }
@@ -129,9 +132,10 @@ fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
 
             if(showTimePicker){
                 SetAlarm(onConfirm = { alarm->
-
-                    val alarm = Alarm(cityName,alarm.hour,alarm.minute,)
-                    alarmViewModel.insertAlarm(alarm)
+                    Log.i("TAG", "AlarmScreen: ${alarm.hour} ${alarm.minute}")
+                    val alarmObj = Alarm(cityName = cityName,hour = alarm.hour,minute = alarm.minute)
+                    alarmViewModel.insertAlarm(alarmObj)
+                    alarmScheduler.setAlarm(alarmObj)
 
                     showTimePicker = false
                 },
@@ -146,7 +150,7 @@ fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmsList(alarm:Alarm,cityName:String,alarmViewModel: AlarmViewModel){
+fun AlarmsList(alarm:Alarm,cityName:String,alarmViewModel: AlarmViewModel,alarmScheduler: AlarmScheduler){
 
     Card(modifier = Modifier
         .padding(10.dp)
@@ -165,8 +169,8 @@ fun AlarmsList(alarm:Alarm,cityName:String,alarmViewModel: AlarmViewModel){
                 contentDescription = "Delete",
                 tint = Color.White,
                 modifier = Modifier.clickable{
-                    alarmViewModel.deleteAlarm(alarm
-                    )
+                    alarmViewModel.deleteAlarm(alarm)
+                    alarmScheduler.cancelAlarm(alarm.id)
                 })
 
             Spacer(modifier = Modifier.width(15.dp))

@@ -33,6 +33,10 @@ class WeatherLocalDataSource (private val weatherDao: WeatherDao){
         return weatherDao.deleteAlarm(alarm)
     }
 
+    suspend fun deleteAlarmById(alarmId:Int){
+        return weatherDao.deleteAlarmById(alarmId)
+    }
+
     companion object {
         @Volatile
         private var INSTANCE : WeatherLocalDataSource? = null

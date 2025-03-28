@@ -51,6 +51,10 @@ class Repository (private val localDataSource: WeatherLocalDataSource,
         return localDataSource.deleteAlarm(alarm)
     }
 
+    suspend fun deleteAlarmById(alarmId:Int){
+        return localDataSource.deleteAlarmById(alarmId)
+    }
+
 
     companion object{
         @Volatile

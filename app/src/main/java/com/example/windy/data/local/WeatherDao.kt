@@ -28,4 +28,7 @@ interface WeatherDao {
 
     @Delete
     suspend fun deleteAlarm(alarm: Alarm) : Int
+
+    @Query("DELETE FROM alarms WHERE id = :id")
+    suspend fun deleteAlarmById(id:Int)
 }

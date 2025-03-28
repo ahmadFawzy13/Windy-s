@@ -3,6 +3,7 @@ package com.example.windy.data.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import java.util.UUID
 
 data class Clouds(
     var all: Int = 0
@@ -58,9 +59,10 @@ data class City(
 
 @Entity(
     tableName = "alarms",
-    primaryKeys = ["hour","minute"]
+    primaryKeys = ["id","hour","minute"]
 )
 data class Alarm(
+    val id : Int = (System.currentTimeMillis()/1000).toInt(),
     val cityName: String,
     val hour : Int,
     val minute : Int

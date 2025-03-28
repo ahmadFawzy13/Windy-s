@@ -53,8 +53,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
     val defaultLon = location.longitude.toString()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(favLat,favLon) {
-
         if(!favLat.isEmpty() && !favLon.isEmpty()){
             homeViewModel.getRemoteCurrentWeather(favLat,
                 favLon,
@@ -72,8 +70,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
                 defaultLon,
                 unit)
         }
-
-    }
 
     val currentWeather = homeViewModel.currentWeather.collectAsStateWithLifecycle().value
     val fiveDayThreeHourWeather = homeViewModel.fiveDayThreeHourWeather.collectAsStateWithLifecycle().value
