@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,6 +71,18 @@ fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
     val favCities = favViewModel.favCities.collectAsStateWithLifecycle().value
     val snackBarHostState = remember { SnackbarHostState() }
 
+
+    LaunchedEffect(favCities) {
+       if (favCities is Response.Message) {
+           snackBarHostState.showSnackbar(
+               message = favCities.msg,
+               duration = SnackbarDuration.Short
+           )
+       }
+    }
+
+
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState)},
         bottomBar = { NavBar(navController) },
@@ -95,23 +108,16 @@ fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
             verticalArrangement = Arrangement.Center
         )
         {
-           when(favCities){
-               is Response.Success -> {
+           when{
+              favCities is Response.Success -> {
                    LazyColumn {
                        items(favCities.data.size){
                            FavCities(favCities.data[it],favViewModel,navController)
                        }
                    }
                }
-               is Response.Failure ->{
-                   LaunchedEffect(favCities) {
-                       snackBarHostState.showSnackbar(
-                           message = favCities.error,
-                           duration = SnackbarDuration.Short
-                       )
-                   }
-               }
-               is Response.Loading ->{
+
+               favCities is Response.Loading ->{
                    Row(modifier = Modifier.fillMaxSize(),
                        horizontalArrangement = Arrangement.Center,
                        verticalAlignment = Alignment.CenterVertically
@@ -119,14 +125,6 @@ fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
 
                        CircularProgressIndicator(modifier = Modifier.size(100.dp))
 
-                   }
-               }
-               is Response.SuccessDataBaseOp ->{
-                   LaunchedEffect(favCities) {
-                       snackBarHostState.showSnackbar(
-                           message = favCities.msg,
-                           duration = SnackbarDuration.Short
-                       )
                    }
                }
            }
@@ -161,7 +159,7 @@ fun FavCities(city: City,favViewModel: FavViewModel,navController: NavController
                 contentDescription = "Delete",
                 tint = Color.White,
                 modifier = Modifier.clickable{
-                    favViewModel.deleteFavCity(city.id)
+                    favViewModel.deleteFavCity(city)
                 })
 
             Spacer(modifier = Modifier.width(15.dp))
@@ -197,6 +195,8 @@ fun MapScreen(favViewModel: FavViewModel) {
     var selectedLatLng by remember { mutableStateOf<LatLng?>(null) }
 
     val context = LocalContext.current.applicationContext
+
+    val scope = rememberCoroutineScope()
 
     if (!Places.isInitialized()) {
         Places.initialize(context, "AIzaSyCvScI24VvzEEkv6EJQCQw7Ovv-_jha5GA")
@@ -263,7 +263,7 @@ fun MapScreen(favViewModel: FavViewModel) {
                             if (fiveDayThreeHourWeather is Response.Success) {
 
                                 fiveDayThreeHourWeather.data.city?.let {
-                                    favViewModel.insertFavCity(it)
+                                    favViewModel.insertFavCity(fiveDayThreeHourWeather.data.city)
                                 }
 
                             }

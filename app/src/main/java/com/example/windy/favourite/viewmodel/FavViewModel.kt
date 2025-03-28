@@ -40,10 +40,10 @@ class FavViewModel(val repo: Repository): ViewModel() {
         viewModelScope.launch(Dispatchers.IO){
                try{
                    repo.getCurrentWeatherRemote(lat=lat,lon=lon,units=units)
-                       .catch {_favCityCurrentWeather.value = Response.Failure(it.printStackTrace().toString()) }
+                       .catch {_favCityCurrentWeather.value = Response.Message(it.printStackTrace().toString()) }
                        .collect { _favCityCurrentWeather.value = Response.Success(it) }
                }catch(e: Exception){
-                   _favCityCurrentWeather.value = Response.Failure(e.printStackTrace().toString())
+                   _favCityCurrentWeather.value = Response.Message(e.printStackTrace().toString())
                }
         }
     }
@@ -52,10 +52,10 @@ class FavViewModel(val repo: Repository): ViewModel() {
         viewModelScope.launch (Dispatchers.IO){
             try {
                 repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
-                    .catch {_fiveDayFavCityWeather.value = Response.Failure(it.printStackTrace().toString()) }
+                    .catch {_fiveDayFavCityWeather.value = Response.Message(it.printStackTrace().toString()) }
                     .collect { _fiveDayFavCityWeather.value = Response.Success(it) }
             }catch (e: Exception){
-                _fiveDayFavCityWeather.value = Response.Failure(e.printStackTrace().toString())
+                _fiveDayFavCityWeather.value = Response.Message(e.printStackTrace().toString())
             }
         }
     }
@@ -64,11 +64,11 @@ class FavViewModel(val repo: Repository): ViewModel() {
         try{
             viewModelScope.launch {
                 repo.getPlaceOnMap(searchText,placesClient)
-                    .catch { _searchPlaceCoordinates.value = Response.Failure(it.printStackTrace().toString()) }
+                    .catch { _searchPlaceCoordinates.value = Response.Message(it.printStackTrace().toString()) }
                     .collect { _searchPlaceCoordinates.value = Response.Success(it) }
             }
         }catch(e: Exception){
-            _searchPlaceCoordinates.value = Response.Failure("Error Connecting To Places Api")
+            _searchPlaceCoordinates.value = Response.Message("Error Connecting To Places Api")
         }
     }
 
@@ -76,10 +76,10 @@ class FavViewModel(val repo: Repository): ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try{
                 repo.getFavCitiesLocal()
-                    .catch {_favCities.value = Response.Failure(it.printStackTrace().toString()) }
+                    .catch {_favCities.value = Response.Message(it.printStackTrace().toString()) }
                     .collect {_favCities.value = Response.Success(it)}
             }catch(e: Exception){
-                _favCities.value = Response.Failure(e.printStackTrace().toString())
+                _favCities.value = Response.Message(e.printStackTrace().toString())
             }
         }
     }
@@ -89,31 +89,31 @@ class FavViewModel(val repo: Repository): ViewModel() {
             try {
                 val result = repo.insertFavCityLocal(city)
                 if(result > 0){
-                    _favCities.value = Response.SuccessDataBaseOp("Saved to favourites")
+                    _favCities.value = Response.Message("Saved to favourites")
                 }else{
-                    _favCities.value = Response.Failure("Problem saving to database")
+                    _favCities.value = Response.Message("Problem saving to database")
                 }
             }catch (e: Exception){
-                _favCities.value = Response.Failure(e.printStackTrace().toString())
+                _favCities.value = Response.Message(e.printStackTrace().toString())
             }
         }
     }
 
-    fun deleteFavCity(id: Int){
+    fun deleteFavCity(city: City){
 
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
 
-                val result = repo.deleteFavCityLocal(id)
+                val result = repo.deleteFavCityLocal(city)
 
                 if(result > 0){
-                    _favCities.value = Response.SuccessDataBaseOp("Deleted")
+                    _favCities.value = Response.Message("Deleted")
                 }else{
-                    _favCities.value = Response.Failure("Couldn't remove from favourites")
+                    _favCities.value = Response.Message("Couldn't remove from favourites")
                 }
             }catch (e: Exception){
-                _favCities.value = Response.Failure(e.printStackTrace().toString())
+                _favCities.value = Response.Message(e.printStackTrace().toString())
             }
         }
     }

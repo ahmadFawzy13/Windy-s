@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -20,16 +22,22 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,9 +49,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.windy.NavigationRoute
+import com.example.windy.Response
 import com.example.windy.SharedCityName
+import com.example.windy.data.model.Alarm
 import com.example.windy.utils.NavBar
 import java.util.Calendar
 import kotlin.math.log
@@ -51,17 +62,28 @@ import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmScreen(navController: NavController){
-
+fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
+    alarmViewModel.getAlarms()
+    val snackBarHostState = remember { SnackbarHostState() }
+    val alarms = alarmViewModel.alarms.collectAsStateWithLifecycle().value
     var showTimePicker by remember {mutableStateOf(false)}
-    val selectedTimes = remember { mutableStateListOf<TimePickerState>() }
     var cityName by remember { mutableStateOf("") }
     cityName = SharedCityName.cityName
 
 
+    LaunchedEffect(alarms) {
+        Log.i("TAG", "AlarmScreen: alarms updated")
+            if (alarms is Response.Message) {
+                snackBarHostState.showSnackbar(
+                    message = alarms.msg,
+                    duration = SnackbarDuration.Short
+            )
+        }
+    }
 
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackBarHostState)},
         bottomBar = { NavBar(navController) },
         containerColor = Color(0xFF182354),
         floatingActionButton = {
@@ -81,24 +103,35 @@ fun AlarmScreen(navController: NavController){
             .fillMaxSize()
             .padding(contentPadding))
         {
+            Log.i("TAG", "AlarmScreen: before when")
 
+            when{
+                alarms is Response.Success ->{
+                    LazyColumn{
+                        items (alarms.data.size) {
+                            Log.i("TAG", "AlarmScreen: ${alarms.data}")
+                            AlarmsList(alarms.data[it],cityName,alarmViewModel)
+                        }
+                    }
+                }
 
-            LazyColumn{
-                items (selectedTimes.size) {
-                    AlarmsList(selectedTimes[it],cityName)
+               alarms is Response.Loading -> {
+                    Row(modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        CircularProgressIndicator(modifier = Modifier.size(100.dp))
+
+                    }
                 }
             }
 
             if(showTimePicker){
                 SetAlarm(onConfirm = { alarm->
 
-                    val duplicateAlarm = selectedTimes.any{
-                        it.hour == alarm.hour && it.minute == alarm.minute
-                    }
-
-                    if(!duplicateAlarm){
-                        selectedTimes.add(alarm)
-                    }
+                    val alarm = Alarm(cityName,alarm.hour,alarm.minute,)
+                    alarmViewModel.insertAlarm(alarm)
 
                     showTimePicker = false
                 },
@@ -113,7 +146,7 @@ fun AlarmScreen(navController: NavController){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmsList(alarmTime:TimePickerState,cityName:String){
+fun AlarmsList(alarm:Alarm,cityName:String,alarmViewModel: AlarmViewModel){
 
     Card(modifier = Modifier
         .padding(10.dp)
@@ -132,16 +165,16 @@ fun AlarmsList(alarmTime:TimePickerState,cityName:String){
                 contentDescription = "Delete",
                 tint = Color.White,
                 modifier = Modifier.clickable{
-
+                    alarmViewModel.deleteAlarm(alarm
+                    )
                 })
 
             Spacer(modifier = Modifier.width(15.dp))
 
             Column ()
             {
-
                 Text(
-                    text = ("${alarmTime.hour}:${alarmTime.minute}"),
+                    text = ("${alarm.hour}:${alarm.minute}"),
                     color = Color.White,
                     fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
@@ -159,7 +192,7 @@ fun AlarmsList(alarmTime:TimePickerState,cityName:String){
             Spacer(modifier = Modifier.padding(10.dp ))
 
             Text(
-                text = cityName,
+                text = alarm.cityName,
                 color = Color.White,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,

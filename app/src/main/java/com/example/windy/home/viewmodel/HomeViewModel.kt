@@ -34,10 +34,10 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
              try {
                  repo.getCurrentWeatherRemote(lat = lat,lon = lon,units = units)
-                     .catch {_currentWeather.value = (Response.Failure(it.printStackTrace().toString())) }
+                     .catch {_currentWeather.value = (Response.Message(it.printStackTrace().toString())) }
                      .collect { _currentWeather.value = Response.Success(it) }
              }catch(e: Exception){
-                 _currentWeather.value = Response.Failure(e.printStackTrace().toString())
+                 _currentWeather.value = Response.Message(e.printStackTrace().toString())
              }
 
         }
@@ -48,11 +48,11 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
         viewModelScope.launch (Dispatchers.IO){
                try {
                    repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
-                       .catch {_fiveDayThreeHourWeather.value = Response.Failure(it.printStackTrace().toString()) }
+                       .catch {_fiveDayThreeHourWeather.value = Response.Message(it.printStackTrace().toString()) }
                        .collect { _fiveDayThreeHourWeather.value = Response.Success(it) }
                }catch(e: Exception
                ){
-                   _fiveDayThreeHourWeather.value = Response.Failure(e.printStackTrace().toString())
+                   _fiveDayThreeHourWeather.value = Response.Message(e.printStackTrace().toString())
                }
         }
     }

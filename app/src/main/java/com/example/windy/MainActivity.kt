@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgs
 import androidx.navigation.toRoute
 import com.example.windy.alarm.view.AlarmScreen
+import com.example.windy.alarm.view.MyAlarmFactory
 import com.example.windy.alarm.view.SetAlarm
 import com.example.windy.data.repo.Repository
 import com.example.windy.favourite.view.FavouriteScreen
@@ -80,7 +81,7 @@ class MainActivity : ComponentActivity() {
 
             val navController = rememberNavController()
             NavHost(navController = navController,
-                startDestination = NavigationRoute.Alarm) {
+                startDestination = NavigationRoute.Home) {
 
                 composable<NavigationRoute.HomeWithParameters>{params->
 
@@ -109,17 +110,14 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable <NavigationRoute.Alarm> {
-                    AlarmScreen(navController)
+                    AlarmScreen(navController,viewModel(factory = MyAlarmFactory(Repository.getInstance(this@MainActivity))))
                 }
 
                 composable <NavigationRoute.SetAlarm> {
                     SetAlarm()
                 }
-
             }
         }
-
-
     }
 
     ///////////Gps Code

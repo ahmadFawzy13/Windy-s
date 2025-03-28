@@ -51,6 +51,9 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
 
     val defaultLat = location.latitude.toString()
     val defaultLon = location.longitude.toString()
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(favLat,favLon) {
 
         if(!favLat.isEmpty() && !favLon.isEmpty()){
             homeViewModel.getRemoteCurrentWeather(favLat,
@@ -70,12 +73,33 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
                 unit)
         }
 
+    }
+
     val currentWeather = homeViewModel.currentWeather.collectAsStateWithLifecycle().value
     val fiveDayThreeHourWeather = homeViewModel.fiveDayThreeHourWeather.collectAsStateWithLifecycle().value
-    val snackBarHostState = remember { SnackbarHostState() }
+
+
+
+    LaunchedEffect(currentWeather) {
+        when{
+            currentWeather is Response.Message ->{
+                snackBarHostState.showSnackbar(
+                    message = currentWeather.msg,
+                    duration = SnackbarDuration.Short
+                )
+            }
+
+            fiveDayThreeHourWeather is Response.Message -> {
+                snackBarHostState.showSnackbar(
+                    message = fiveDayThreeHourWeather.msg,
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
+    }
 
     Scaffold(
-        snackbarHost = {SnackbarHost(remember { SnackbarHostState() })},
+        snackbarHost = { SnackbarHost(snackBarHostState) },
         bottomBar = { NavBar(navController) },
         containerColor = Color(0xFF182354)
 
@@ -89,31 +113,25 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
                 verticalArrangement = Arrangement.Center
         )
         {
+           when{
+               currentWeather is Response.Success &&
+                       fiveDayThreeHourWeather is Response.Success ->{
+                  HomeWeather(currentWeather.data,fiveDayThreeHourWeather.data)
+               }
 
-            if(currentWeather is Response.Success && fiveDayThreeHourWeather is Response.Success){
-                HomeWeather(
-                    currentWeather.data,
-                    fiveDayThreeHourWeather.data)
+               currentWeather is Response.Loading ||
+                       fiveDayThreeHourWeather is Response.Loading->{
 
-            }else if(currentWeather is Response.Failure || fiveDayThreeHourWeather is Response.Failure){
+                   Row(modifier = Modifier.fillMaxSize(),
+                       horizontalArrangement = Arrangement.Center,
+                       verticalAlignment = Alignment.CenterVertically
+                   ) {
 
-                LaunchedEffect(currentWeather) {
-                    snackBarHostState.showSnackbar(
-                        message = (currentWeather as Response.Failure).error,
-                        duration = SnackbarDuration.Short
-                    )
-                }
-            }else if(currentWeather is Response.Loading || fiveDayThreeHourWeather is Response.Loading){
-                Row(modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                    ) {
+                       CircularProgressIndicator(modifier = Modifier.size(100.dp))
 
-                    CircularProgressIndicator(modifier = Modifier.size(100.dp))
-
-                }
-
-            }
+                   }
+               }
+           }
         }
     }
 }

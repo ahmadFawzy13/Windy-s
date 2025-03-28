@@ -2,6 +2,7 @@ package com.example.windy.data.repo
 
 import android.content.Context
 import com.example.windy.data.local.WeatherLocalDataSource
+import com.example.windy.data.model.Alarm
 import com.example.windy.data.model.City
 import com.example.windy.data.model.FavCity
 import com.example.windy.data.remote.CurrentWeatherResponse
@@ -34,9 +35,22 @@ class Repository (private val localDataSource: WeatherLocalDataSource,
         return localDataSource.insertFavCityLocal(city)
     }
 
-    suspend fun deleteFavCityLocal(id:Int):Int{
-        return localDataSource.deleteFavCityLocal(id)
+    suspend fun deleteFavCityLocal(city: City):Int{
+        return localDataSource.deleteFavCityLocal(city)
     }
+
+    fun getAlarms():Flow<List<Alarm>>{
+        return localDataSource.getAlarms()
+    }
+
+    suspend fun insertAlarm(alarm: Alarm):Long{
+        return localDataSource.insertAlarm(alarm)
+    }
+
+    suspend fun deleteAlarm(alarm: Alarm):Int{
+        return localDataSource.deleteAlarm(alarm)
+    }
+
 
     companion object{
         @Volatile

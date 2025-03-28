@@ -40,12 +40,12 @@ fun getCountryName(countryCode: String?): String {
 
 fun getDayName(dateStringFormat: String): String {
 
-    val dateTime = LocalDateTime.parse(dateStringFormat, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+    val dateTime =
+        LocalDateTime.parse(dateStringFormat, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
 
     val dayName = dateTime.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.ENGLISH)
 
     return dateTime.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.ENGLISH)
 }
-
 
 
