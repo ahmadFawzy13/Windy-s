@@ -26,6 +26,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,6 +48,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgs
 import androidx.navigation.toRoute
+import com.example.windy.alarm.view.AlarmScreen
+import com.example.windy.alarm.view.SetAlarm
 import com.example.windy.data.repo.Repository
 import com.example.windy.favourite.view.FavouriteScreen
 import com.example.windy.favourite.view.MapScreen
@@ -66,6 +69,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient //byrg3 location
     lateinit var locationState: MutableState<Location> //3shan el location bytghyr
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -76,7 +80,7 @@ class MainActivity : ComponentActivity() {
 
             val navController = rememberNavController()
             NavHost(navController = navController,
-                startDestination = NavigationRoute.Favourite) {
+                startDestination = NavigationRoute.Alarm) {
 
                 composable<NavigationRoute.HomeWithParameters>{params->
 
@@ -104,8 +108,18 @@ class MainActivity : ComponentActivity() {
                     MapScreen(viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
                 }
 
+                composable <NavigationRoute.Alarm> {
+                    AlarmScreen(navController)
+                }
+
+                composable <NavigationRoute.SetAlarm> {
+                    SetAlarm()
+                }
+
             }
         }
+
+
     }
 
     ///////////Gps Code

@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.windy.Response
+import com.example.windy.SharedCityName
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.utils.NavBar
@@ -51,7 +52,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
     val defaultLat = location.latitude.toString()
     val defaultLon = location.longitude.toString()
 
-    LaunchedEffect(location.latitude) {
         if(!favLat.isEmpty() && !favLon.isEmpty()){
             homeViewModel.getRemoteCurrentWeather(favLat,
                 favLon,
@@ -69,7 +69,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
                 defaultLon,
                 unit)
         }
-    }
 
     val currentWeather = homeViewModel.currentWeather.collectAsStateWithLifecycle().value
     val fiveDayThreeHourWeather = homeViewModel.fiveDayThreeHourWeather.collectAsStateWithLifecycle().value
@@ -189,6 +188,7 @@ fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayTh
                {
                    Text (text = "${countryName}, ${currentWeatherResponse?.cityName}",
                        color = Color.White)
+                   SharedCityName.cityName = currentWeatherResponse?.cityName.toString()
                }
 
                Row(modifier = Modifier.fillMaxWidth(),

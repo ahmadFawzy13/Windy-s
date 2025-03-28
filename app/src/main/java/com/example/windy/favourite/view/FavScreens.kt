@@ -19,11 +19,13 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -51,7 +53,6 @@ import com.example.windy.NavigationRoute
 import com.example.windy.Response
 import com.example.windy.data.model.City
 import com.example.windy.favourite.viewmodel.FavViewModel
-import com.example.windy.utils.FloatingActionB
 import com.example.windy.utils.NavBar
 import com.example.windy.utils.getCountryName
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -73,7 +74,16 @@ fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
         snackbarHost = { SnackbarHost(snackBarHostState)},
         bottomBar = { NavBar(navController) },
         containerColor = Color(0xFF182354),
-        floatingActionButton = {FloatingActionB(navController)}
+        floatingActionButton = { ExtendedFloatingActionButton(
+            onClick = {
+                navController.navigate(NavigationRoute.Map)
+            },
+            icon = { Icon(Icons.Filled.LocationOn, "Maps") },
+            text = {
+                Text(text = "Maps", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            },
+            containerColor = Color.White
+        ) }
 
     )
     {contentPadding ->

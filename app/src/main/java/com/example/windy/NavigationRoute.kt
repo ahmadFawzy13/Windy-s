@@ -12,4 +12,8 @@ sealed class NavigationRoute {
     object Favourite : NavigationRoute()
     @Serializable
     object Map : NavigationRoute()
+    @Serializable
+    object Alarm : NavigationRoute()
+    @Serializable
+    object SetAlarm : NavigationRoute()
 }

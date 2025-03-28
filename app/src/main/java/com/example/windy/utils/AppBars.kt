@@ -154,7 +154,7 @@ fun NavBar(navController: NavController){
 
                          0 -> navController.navigate(NavigationRoute.Home)
                          1 -> navController.navigate(NavigationRoute.Favourite)
-                         2 -> navController.navigate(NavigationRoute.Home)
+                         2 -> navController.navigate(NavigationRoute.Alarm)
                          3-> navController.navigate(NavigationRoute.Home)
 
                     }
@@ -164,8 +164,8 @@ fun NavBar(navController: NavController){
     }
 }
 
-@Composable
-fun FloatingActionB(navController: NavController){
+/*@Composable
+fun FloatingActionMap(navController: NavController){
 
         ExtendedFloatingActionButton(
             onClick = {
@@ -178,4 +178,21 @@ fun FloatingActionB(navController: NavController){
             containerColor = Color.White
         )
 
-}
+}*/
+
+/*
+@Composable
+fun FloatingActionAlarm(navController: NavController){
+
+    ExtendedFloatingActionButton(
+        onClick = {
+            navController.navigate(NavigationRoute.SetAlarm)
+        },
+        icon = { Icon(Icons.Filled.LocationOn, "Alarm") },
+        text = {
+            Text(text = "Set Alarm", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+        },
+        containerColor = Color.White
+    )
+
+}*/

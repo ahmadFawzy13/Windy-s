@@ -56,6 +56,13 @@ data class City(
     val sunset: Int = 0
 )
 
+@Entity(tableName = "alarms")
+data class Alarm(
+    @PrimaryKey val cityID : Int,
+    val hour : Int,
+    val minute : Int
+)
+
 
 data class FavCity(
     @PrimaryKey val id:Int = 0,
