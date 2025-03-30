@@ -81,8 +81,6 @@ fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
        }
     }
 
-
-
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState)},
         bottomBar = { NavBar(navController) },
@@ -206,9 +204,6 @@ fun MapScreen(favViewModel: FavViewModel) {
 
     favViewModel.getPlaceOnMap(searchText,places)
 
-
-
-
     Box(modifier = Modifier.fillMaxSize()) {
         LocationPickerMap(
             selectedLocation = selectedLatLng,
@@ -258,7 +253,8 @@ fun MapScreen(favViewModel: FavViewModel) {
                             favViewModel.getRemoteFiveDayThreeHourWeather(
                                 latLng.latitude.toString(),
                                 latLng.longitude.toString(),
-                                "metric"
+                                "metric",
+                                "en"
                             )
                             if (fiveDayThreeHourWeather is Response.Success) {
 
@@ -280,7 +276,6 @@ fun MapScreen(favViewModel: FavViewModel) {
         }
     }
 }
-
 
 @Composable
 fun LocationPickerMap(

@@ -1,4 +1,4 @@
-package com.example.windy
+package com.example.windy.utils
 
 import androidx.room.TypeConverter
 import com.example.windy.data.model.Coordinates

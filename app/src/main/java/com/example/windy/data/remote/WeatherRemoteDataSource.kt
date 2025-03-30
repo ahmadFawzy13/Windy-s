@@ -13,12 +13,12 @@ import kotlinx.coroutines.flow.flowOf
 class WeatherRemoteDataSource private constructor(private val service: WeatherApi){
 
 
-    suspend fun getCurrentWeatherRemote(lat:String, lon:String, units:String): Flow<CurrentWeatherResponse> {
-        return flowOf(service.getCurrentWeather(lat = lat,lon = lon, units = units))
+    suspend fun getCurrentWeatherRemote(lat:String, lon:String, units:String, lang:String): Flow<CurrentWeatherResponse> {
+        return flowOf(service.getCurrentWeather(lat = lat,lon = lon, units = units, lang = lang))
     }
 
-    suspend fun getFiveDayThreeHourWeatherRemote(lat: String, lon: String, units: String): Flow<FiveDayThreeHourResponse> {
-        return flowOf(service.getFiveDayThreeHourForecast(lat = lat, lon = lon, units = units))
+    suspend fun getFiveDayThreeHourWeatherRemote(lat: String, lon: String, units: String,lang :String): Flow<FiveDayThreeHourResponse> {
+        return flowOf(service.getFiveDayThreeHourForecast(lat = lat, lon = lon, units = units, lang = lang))
     }
 
     suspend fun getPlaceOnMap(searchText: String, placesClient: PlacesClient) : Flow<LatLng>{
@@ -60,7 +60,6 @@ class WeatherRemoteDataSource private constructor(private val service: WeatherAp
         fun getInstance(): WeatherRemoteDataSource{
 
             return INSTANCE?: synchronized(this){
-
                 val instance = WeatherRemoteDataSource(RetroFitHelper.apiService)
                 INSTANCE = instance
                 instance

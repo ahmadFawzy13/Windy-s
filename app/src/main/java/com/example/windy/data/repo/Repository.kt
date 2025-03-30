@@ -15,12 +15,12 @@ import kotlinx.coroutines.flow.Flow
 class Repository (private val localDataSource: WeatherLocalDataSource,
     private val remoteDataSource: WeatherRemoteDataSource){
 
-    suspend fun getCurrentWeatherRemote(lat:String,lon:String,units:String): Flow<CurrentWeatherResponse> {
-        return remoteDataSource.getCurrentWeatherRemote(lat,lon,units)
+    suspend fun getCurrentWeatherRemote(lat:String,lon:String,units:String,lang:String): Flow<CurrentWeatherResponse> {
+        return remoteDataSource.getCurrentWeatherRemote(lat,lon,units,lang)
     }
 
-    suspend fun getFiveDayThreeHourWeatherRemote(lat: String, lon: String, units: String): Flow<FiveDayThreeHourResponse> {
-        return remoteDataSource.getFiveDayThreeHourWeatherRemote(lat,lon,units)
+    suspend fun getFiveDayThreeHourWeatherRemote(lat: String, lon: String, units: String,lang:String): Flow<FiveDayThreeHourResponse> {
+        return remoteDataSource.getFiveDayThreeHourWeatherRemote(lat,lon,units,lang)
     }
 
     suspend fun getPlaceOnMap(searchText:String,placesClient: PlacesClient) :Flow<LatLng>{

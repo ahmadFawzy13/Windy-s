@@ -22,7 +22,6 @@ import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -38,7 +37,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.windy.alarm.view.AlarmScreen
-import com.example.windy.alarm.view.MyAlarmFactory
+import com.example.windy.alarm.viewmodel.MyAlarmFactory
 import com.example.windy.alarm.view.SetAlarm
 import com.example.windy.data.repo.Repository
 import com.example.windy.favourite.view.FavouriteScreen
@@ -46,6 +45,7 @@ import com.example.windy.favourite.view.MapScreen
 import com.example.windy.favourite.viewmodel.MyFavFactory
 import com.example.windy.home.view.HomeScreen
 import com.example.windy.home.viewmodel.MyHomeFactory
+import com.example.windy.settings.view.SettingsScreen
 
 const val REQUEST_LOCATION_CODE = 134
 const val REQUEST_NOTIFICATIONS_CODE = 567
@@ -100,6 +100,9 @@ class MainActivity : ComponentActivity() {
 
                 composable <NavigationRoute.SetAlarm> {
                     SetAlarm()
+                }
+                composable <NavigationRoute.Settings> {
+                    SettingsScreen(navController)
                 }
             }
         }
@@ -190,7 +193,6 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
         startActivity(intent)
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int, // the request code I gave

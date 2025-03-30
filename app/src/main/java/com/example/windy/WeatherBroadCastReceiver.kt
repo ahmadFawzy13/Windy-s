@@ -22,8 +22,6 @@ class WeatherBroadCastReceiver: BroadcastReceiver() {
         const val CHANNEL_ID = "1"
     }
 
-
-
     override fun onReceive(context: Context, intent: Intent) {
         val notificationSong: Uri = "android.resource://com.example.windy/${R.raw.mario}".toUri()
         val cityName = intent.getStringExtra("cityName")
@@ -39,7 +37,6 @@ class WeatherBroadCastReceiver: BroadcastReceiver() {
 
         val dismissIntent = Intent(context,
             OnClickNotificationActionReceiver::class.java).apply {
-
                 action = "Dismiss"
                 putExtra("alarmId",alarmId)
         }
@@ -90,8 +87,10 @@ class WeatherBroadCastReceiver: BroadcastReceiver() {
               description = notificationDesc
             setSound(notificationSong,channelSound)
         }
-        val notificationManager : NotificationManager = context.getSystemService(NotificationManager::class.java)
-        notificationManager.createNotificationChannel(channel)
+        val notificationManager : NotificationManager = context.getSystemService(NotificationManager::class.java).apply {
+            createNotificationChannel(channel)
+        }
+        //notificationManager.createNotificationChannel(channel)
 
 
         val builder = NotificationCompat.Builder(context,CHANNEL_ID)
@@ -123,7 +122,6 @@ class WeatherBroadCastReceiver: BroadcastReceiver() {
     }
 
     suspend fun deleteAlarm(context: Context, alarmId:Int){
-        Log.i("TAG", "deleteAlarm: $alarmId")
         val repo = Repository.getInstance(context)
         repo.deleteAlarmById(alarmId)
     }

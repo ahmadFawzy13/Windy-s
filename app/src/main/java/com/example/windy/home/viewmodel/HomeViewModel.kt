@@ -30,10 +30,10 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
     val fiveDayThreeHourWeather =
         _fiveDayThreeHourWeather.asStateFlow()
 
-    fun getRemoteCurrentWeather(lat:String,lon:String,units:String){
+    fun getRemoteCurrentWeather(lat:String,lon:String,units:String,lang:String){
         viewModelScope.launch(Dispatchers.IO) {
              try {
-                 repo.getCurrentWeatherRemote(lat = lat,lon = lon,units = units)
+                 repo.getCurrentWeatherRemote(lat,lon,units,lang)
                      .catch {_currentWeather.value = (Response.Message(it.printStackTrace().toString())) }
                      .collect { _currentWeather.value = Response.Success(it) }
              }catch(e: Exception){
@@ -43,11 +43,11 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
         }
     }
 
-    fun getRemoteFiveDayThreeHourWeather(lat:String,lon:String,units:String){
+    fun getRemoteFiveDayThreeHourWeather(lat:String,lon:String,units:String,lang:String){
 
         viewModelScope.launch (Dispatchers.IO){
                try {
-                   repo.getFiveDayThreeHourWeatherRemote(lat = lat, lon = lon, units = units)
+                   repo.getFiveDayThreeHourWeatherRemote(lat,lon,units,lang)
                        .catch {_fiveDayThreeHourWeather.value = Response.Message(it.printStackTrace().toString()) }
                        .collect { _fiveDayThreeHourWeather.value = Response.Success(it) }
                }catch(e: Exception

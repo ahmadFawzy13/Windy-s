@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Windy</string>
+    <string name="today">Today</string>
+    <string name="hourly_details">Hourly Details</string>
+    <string name="pressure">Pressure</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="humidity">Humidity</string>
+    <string name="clouds">Clouds</string>
+    <string name="next_five_days">Next Five Days</string>
+    <string name="temp">Temp</string>
+    <string name="feels_like">Feels Like</string>
 </resources>

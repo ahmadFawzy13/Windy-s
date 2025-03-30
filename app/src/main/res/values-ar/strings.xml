@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ويندي</string>
+    <string name="today">اليوم</string>
+    <string name="hourly_details">تفاصيل كل ساعة</string>
+    <string name="pressure">الضغط</string>
+    <string name="wind_speed">سرعة الرياح</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="clouds">السحاب</string>
+    <string name="next_five_days">الخمسة أيام القادمة</string>
+    <string name="temp">درجة الحرارة</string>
+    <string name="feels_like">تشعر بأنها</string>
+</resources>

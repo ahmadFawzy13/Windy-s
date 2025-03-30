@@ -48,4 +48,8 @@ fun getDayName(dateStringFormat: String): String {
     return dateTime.dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.ENGLISH)
 }
 
+fun metrePerSecondToMilePerHour(metrePerSecond:Double){
+
+}
+
 

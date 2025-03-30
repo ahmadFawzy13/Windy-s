@@ -16,4 +16,6 @@ sealed class NavigationRoute {
     object Alarm : NavigationRoute()
     @Serializable
     object SetAlarm : NavigationRoute()
+    @Serializable
+    object Settings : NavigationRoute()
 }

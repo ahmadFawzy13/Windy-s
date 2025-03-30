@@ -11,13 +11,15 @@ interface WeatherApi {
         @Query("lat") lat:String,
         @Query("lon") lon:String,
         @Query("appid") apiKey:String = "6d7d75f169e0855aeefd1ce1fabf5555",
-        @Query("units") units:String = "metric"): CurrentWeatherResponse
+        @Query("units") units:String = "metric",
+        @Query("lang") lang:String):CurrentWeatherResponse
 
     @GET("forecast")
     suspend fun getFiveDayThreeHourForecast(
         @Query("lat") lat:String,
         @Query("lon") lon:String,
         @Query("appid") apiKey:String = "6d7d75f169e0855aeefd1ce1fabf5555",
-        @Query("units") units:String = "metric"): FiveDayThreeHourResponse
+        @Query("units") units:String,
+        @Query("lang") lang:String): FiveDayThreeHourResponse
 
 }

@@ -1,8 +1,6 @@
 package com.example.windy.alarm.view
 
-import android.app.AlarmManager
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,14 +49,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.windy.AlarmScheduler
-import com.example.windy.NavigationRoute
+import com.example.windy.utils.AlarmScheduler
 import com.example.windy.Response
-import com.example.windy.SharedCityName
+import com.example.windy.alarm.viewmodel.AlarmViewModel
+import com.example.windy.utils.SharedCityName
 import com.example.windy.data.model.Alarm
 import com.example.windy.utils.NavBar
 import java.util.Calendar
-import kotlin.math.log
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,7 +146,7 @@ fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmsList(alarm:Alarm,cityName:String,alarmViewModel: AlarmViewModel,alarmScheduler: AlarmScheduler){
+fun AlarmsList(alarm:Alarm, cityName:String, alarmViewModel: AlarmViewModel, alarmScheduler: AlarmScheduler){
 
     Card(modifier = Modifier
         .padding(10.dp)

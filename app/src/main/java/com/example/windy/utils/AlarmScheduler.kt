@@ -1,10 +1,11 @@
-package com.example.windy
+package com.example.windy.utils
 
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
+import com.example.windy.WeatherBroadCastReceiver
 import com.example.windy.data.model.Alarm
 
 class AlarmScheduler(private val context: Context) {
@@ -20,7 +21,6 @@ class AlarmScheduler(private val context: Context) {
         val intent = Intent(context, WeatherBroadCastReceiver::class.java).apply {
             putExtra("alarmId",alarm.id)
             putExtra("cityName",alarm.cityName)
-
         }
 
         val pendingIntent = PendingIntent.getBroadcast(context,
