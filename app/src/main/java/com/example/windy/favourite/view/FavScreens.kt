@@ -1,7 +1,6 @@
 package com.example.windy.favourite.view
 
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.windy.NavigationRoute
+import com.example.windy.R
 import com.example.windy.Response
 import com.example.windy.data.model.City
 import com.example.windy.favourite.viewmodel.FavViewModel
@@ -91,7 +92,7 @@ fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
             },
             icon = { Icon(Icons.Filled.LocationOn, "Maps") },
             text = {
-                Text(text = "Maps", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(text = stringResource(R.string.maps), fontWeight = FontWeight.Bold, fontSize = 20.sp)
             },
             containerColor = Color.White
         ) }
@@ -141,7 +142,7 @@ fun FavCities(city: City,favViewModel: FavViewModel,navController: NavController
         .padding(10.dp)
         .fillMaxWidth()
         .clickable {
-            navController.navigate(NavigationRoute.HomeWithParameters(lat, lon))
+            navController.navigate(NavigationRoute.HomeFav(lat, lon))
         },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
@@ -268,7 +269,7 @@ fun MapScreen(favViewModel: FavViewModel) {
 
                         Icon(Icons.Outlined.Favorite, contentDescription = "Add to fav")
                         Spacer(modifier = Modifier.width(5.dp))
-                        Text("Save location", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.save_location), fontWeight = FontWeight.Bold)
 
                     }
                 }
@@ -280,7 +281,7 @@ fun MapScreen(favViewModel: FavViewModel) {
 @Composable
 fun LocationPickerMap(
     selectedLocation :LatLng?,
-    onLocationSelected: (LatLng) -> Unit // Callback when user taps map
+    onLocationSelected: (LatLng) -> Unit
 ) {
 
     val defaultLocation = remember {LatLng(30.0381736, 30.9793528) }

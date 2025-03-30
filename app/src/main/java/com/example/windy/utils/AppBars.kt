@@ -190,35 +190,3 @@ fun NavBar(navController: NavController){
         }
     }
 }
-
-@Composable
-fun RadioButtonSingleSelection(modifier: Modifier = Modifier,option1:String,option2: String,option3: String) {
-    val radioOptions = listOf(option1,option2,option3)
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
-
-    Row(modifier.selectableGroup()) {
-        radioOptions.forEach { text ->
-            Column(
-                Modifier
-                    .fillMaxHeight()
-                    .selectable(
-                        selected = (text == selectedOption),
-                        onClick = { onOptionSelected(text) },
-                        role = Role.RadioButton
-                    )
-                    .padding(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-                RadioButton(
-                    selected = (text == selectedOption),
-                    onClick = null
-                )
-            }
-        }
-    }
-}

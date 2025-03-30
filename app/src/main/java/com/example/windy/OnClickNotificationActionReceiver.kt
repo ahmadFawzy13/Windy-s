@@ -15,8 +15,8 @@ class OnClickNotificationActionReceiver : BroadcastReceiver() {
         val notificationManager = NotificationManagerCompat.from(context)
 
         when(intent.action){
-            "Dismiss" -> notificationManager.cancel(alarmId)
-            "Snooze" -> {
+            context.getString(R.string.dismiss) -> notificationManager.cancel(alarmId)
+            context.getString(R.string.snooze) -> {
                 notificationManager.cancel(alarmId)
                 val cityName = intent.getStringExtra("cityName")
                 val calendar = Calendar.getInstance().apply {

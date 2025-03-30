@@ -1,6 +1,5 @@
 package com.example.windy
 
-import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
 import androidx.core.content.edit
@@ -14,6 +13,8 @@ class WeatherSettings private constructor (context: Context) {
         const val LANG_KEY = "lang"
         const val WIND_KEY = "wind_unit"
         const val LOCATION_KEY = "location"
+        const val SETTINGS_LATITUDE = "settings_latitude"
+        const val SETTINGS_LONGITUDE = "settings_longitude"
 
         @Volatile
         private var INSTANCE: WeatherSettings? = null
@@ -33,16 +34,19 @@ class WeatherSettings private constructor (context: Context) {
 
     fun getTemperatureUnit()= sharedPrefs.getString(TEMP_KEY,"c")
 
-    fun setAppLanguage(context: Context, lang: String) {
+    fun setAppLanguage(lang: String) = sharedPrefs.edit { putString(LANG_KEY, lang) }
 
-        sharedPrefs.edit { putString(LANG_KEY, lang) }
-
-        val locale = Locale(lang)
+    fun rememberAppLanguage(context: Context){
+        val locale = Locale(getAppLanguage() ?: "en")
         Locale.setDefault(locale)
-        val config = Configuration(context.resources.configuration)
+
+        val resources = context.resources
+        val config = Configuration(resources.configuration)
         config.setLocale(locale)
-        context.resources.updateConfiguration(config, context.resources.displayMetrics)
-        (context as? Activity)?.recreate()
+        config.setLayoutDirection(locale)
+
+        context.createConfigurationContext(config)
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 
     fun getAppLanguage()= sharedPrefs.getString(LANG_KEY,"en")
@@ -54,5 +58,21 @@ class WeatherSettings private constructor (context: Context) {
     fun setLocationPref(locationPref: String) = sharedPrefs.edit {putString(LOCATION_KEY,locationPref)}
 
     fun getLocationPref() = sharedPrefs.getString(LOCATION_KEY,"gps")
+
+    fun setSettingLatitude(settingsLatitude:String) {
+        sharedPrefs.edit(){putString(SETTINGS_LATITUDE,settingsLatitude)}
+    }
+
+    fun setSettingsLongitude(settingsLongitude:String){
+        sharedPrefs.edit() {putString(SETTINGS_LONGITUDE, settingsLongitude)}
+    }
+
+    fun getSettingLatitude() :String{
+       return sharedPrefs.getString(SETTINGS_LATITUDE,"0").toString()
+    }
+
+    fun getSettingsLongitude():String{
+        return sharedPrefs.getString(SETTINGS_LONGITUDE,"0").toString()
+    }
 
 }

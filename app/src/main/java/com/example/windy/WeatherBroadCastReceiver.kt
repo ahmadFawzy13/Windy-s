@@ -95,8 +95,8 @@ class WeatherBroadCastReceiver: BroadcastReceiver() {
 
         val builder = NotificationCompat.Builder(context,CHANNEL_ID)
             .setSmallIcon(R.drawable.clouds)
-            .setContentTitle("$cityName weather is ready for you")
-            .setContentText("Tap to see forecast")
+            .setContentTitle(context.getString(R.string.weather_is_ready_for_you, cityName))
+            .setContentText(context.getString(R.string.tap_to_see_forecast))
             .setContentIntent(pendingGeneralIntent)
             .setAutoCancel(true)
             .setSound(notificationSong)

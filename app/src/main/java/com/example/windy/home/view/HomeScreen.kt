@@ -1,6 +1,5 @@
 package com.example.windy.home.view
 
-import android.content.SharedPreferences
 import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -23,22 +22,20 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Composition
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavController
 import com.example.windy.home.viewmodel.HomeViewModel
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,13 +55,37 @@ import com.example.windy.utils.getCountryName
 import com.example.windy.utils.getDayName
 
 @Composable
-fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, location:Location,unit:String="metric",favLat: String = "", favLon:String=""){
+fun HomeScreen(navController: NavController,
+               homeViewModel: HomeViewModel,
+               location:Location,
+               favLat: String = "",
+               favLon:String=""){
 
-    val defaultLat = location.latitude.toString()
-    val defaultLon = location.longitude.toString()
     val snackBarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val weatherPrefs = remember { WeatherSettings.getInstance(context) }
+    var defaultLat by remember { mutableStateOf("") }
+    var defaultLon by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+
+         defaultLat = when(weatherPrefs.getLocationPref()){
+            "map" -> {
+                Log.i("TAG", "HomeScreen: SHARED ${weatherPrefs.getSettingLatitude()}")
+                weatherPrefs.getSettingLatitude()
+            }
+            else -> location.latitude.toString()
+        }
+
+         defaultLon = when(weatherPrefs.getLocationPref()){
+            "map" -> {
+                Log.i("TAG", "HomeScreen: SHARED ${weatherPrefs.getSettingsLongitude()}")
+                weatherPrefs.getSettingsLongitude()
+            }
+            else -> location.longitude.toString()
+        }
+    }
+
 
     val appTempUnit = when(weatherPrefs.getTemperatureUnit()){
             "c" -> "metric"
@@ -77,12 +98,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
         "en" -> "en"
         "ar" -> "ar"
         else -> "en"
-    }
-
-    val layoutDirection = if (weatherPrefs.getAppLanguage() == "ar") {
-        LayoutDirection.Rtl
-    } else {
-        LayoutDirection.Ltr
     }
 
         if((favLat.isNotEmpty() && favLon.isNotEmpty())){
@@ -128,7 +143,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
         }
     }
 
-    CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
         Scaffold(
             snackbarHost = { SnackbarHost(snackBarHostState) },
             bottomBar = { NavBar(navController) },
@@ -165,7 +179,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel, locat
                     }
                 }
             }
-        }
     }
 }
 
@@ -180,35 +193,31 @@ fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayTh
     val countryName = getCountryName(currentWeatherResponse?.sys?.country)
     var windSpeed = currentWeatherResponse?.wind?.speed
     var windUnit = ""
+    var isArabic = weatherPrefs.getAppLanguage() == "ar"
     val sunrise = convertUnixTimeToTime(currentWeatherResponse?.sys?.sunrise?.toLong() ?: 0)
     val sunset = convertUnixTimeToTime(currentWeatherResponse?.sys?.sunset?.toLong() ?: 0)
 
     if((weatherPrefs.getTemperatureUnit() == "c" || weatherPrefs.getTemperatureUnit() == "k") && weatherPrefs.getWindSpeedUnit() == "m/h"){
-        windUnit = "mph"
+        windUnit = stringResource(R.string.mph)
          windSpeed = currentWeatherResponse?.wind?.speed?.times(2.23694)
 
     }else if (weatherPrefs.getTemperatureUnit() == "f" && weatherPrefs.getWindSpeedUnit() == "m/s"){
-        windUnit = "m/s"
+        windUnit = stringResource(R.string.m_s)
         windSpeed = currentWeatherResponse?.wind?.speed?.times(0.44704)
     }else if(weatherPrefs.getTemperatureUnit() == "f"){
-        windUnit = "mph"
+        windUnit = stringResource(R.string.mph)
     }
     else {
-        windUnit = "m/s"
+        windUnit = stringResource(R.string.m_s)
     }
    var tempUnit =  when(weatherPrefs.getTemperatureUnit()){
-        "c" -> "°C"
-        "k" -> "k"
-        "f" ->"°F"
-       else -> "°C"
+        "c" -> stringResource(R.string.c)
+        "k" -> stringResource(R.string.k)
+        "f" -> stringResource(R.string.f)
+       else -> stringResource(R.string.c)
    }
-    val layoutDirection = if (weatherPrefs.getAppLanguage() == "ar") {
-        LayoutDirection.Rtl
-    } else {
-        LayoutDirection.Ltr
-    }
 
-    CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+
 
         LazyColumn(
             modifier = Modifier
@@ -256,7 +265,10 @@ fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayTh
                     )
                     {
                         Text(
-                            text = "Feels like ${currentWeatherResponse?.weatherDetails?.feelsLike.toString()}°C",
+                            text = stringResource(
+                                R.string.feels_like_c,
+                                currentWeatherResponse?.weatherDetails?.feelsLike.toString()
+                            ),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
@@ -300,8 +312,8 @@ fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayTh
                         horizontalArrangement = Arrangement.Absolute.SpaceEvenly
                     )
                     {
-                        Text("Sunrise $sunrise", color = Color.White)
-                        Text("Sunset $sunset", color = Color.White)
+                        Text(stringResource(R.string.sunrise, sunrise), color = Color.White)
+                        Text(stringResource(R.string.sunset, sunset), color = Color.White)
                     }
                 }
             }
@@ -374,7 +386,7 @@ fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayTh
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp) // Space between rows
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -484,7 +496,7 @@ fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayTh
                         )
                         {
                             Text(
-                                text = getDayName(dailyWeather.dateAndTimeAsString),
+                                text = getDayName(dailyWeather.dateAndTimeAsString, isArabic),
                                 fontSize = 20.sp,
                                 color = Color.White,
                                 fontWeight = FontWeight.Bold,
@@ -538,6 +550,5 @@ fun HomeWeather(currentWeatherResponse: CurrentWeatherResponse? = null,fiveDayTh
                 }
             }
         }
-    }
 }
 

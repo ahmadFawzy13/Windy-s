@@ -45,6 +45,7 @@ import com.example.windy.favourite.view.MapScreen
 import com.example.windy.favourite.viewmodel.MyFavFactory
 import com.example.windy.home.view.HomeScreen
 import com.example.windy.home.viewmodel.MyHomeFactory
+import com.example.windy.settings.view.MapScreenSettings
 import com.example.windy.settings.view.SettingsScreen
 
 const val REQUEST_LOCATION_CODE = 134
@@ -57,33 +58,32 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+       WeatherSettings.getInstance(this).rememberAppLanguage(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         setContent {
 
             locationState = remember{mutableStateOf(Location(LocationManager.GPS_PROVIDER))}
-
             val navController = rememberNavController()
             NavHost(navController = navController,
                 startDestination = NavigationRoute.Home) {
 
-                composable<NavigationRoute.HomeWithParameters>{params->
+                composable<NavigationRoute.HomeFav>{ params->
 
-                    val data =params.toRoute<NavigationRoute.HomeWithParameters>()
+                    val data =params.toRoute<NavigationRoute.HomeFav>()
                     val favLat = data.favLat
                     val favLon = data.favLon
 
                     HomeScreen(navController,
                         viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),
                         locationState.value,
-                        "metric",favLat,favLon)
+                        favLat,favLon)
                 }
 
-                composable <NavigationRoute.Home>{
+                composable <NavigationRoute.Home>{params ->
                     HomeScreen(navController,
                         viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),
-                        locationState.value,"metric")
+                        locationState.value)
                 }
 
                 composable <NavigationRoute.Favourite>{
@@ -104,11 +104,14 @@ class MainActivity : ComponentActivity() {
                 composable <NavigationRoute.Settings> {
                     SettingsScreen(navController)
                 }
+                composable <NavigationRoute.MapSettings> {
+                    MapScreenSettings(viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
+                }
             }
         }
     }
 
-    ///////////Gps&Notification Code
+
     override fun onStart() {
         super.onStart()
 

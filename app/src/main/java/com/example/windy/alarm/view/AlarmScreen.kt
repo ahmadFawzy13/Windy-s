@@ -44,11 +44,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.windy.R
 import com.example.windy.utils.AlarmScheduler
 import com.example.windy.Response
 import com.example.windy.alarm.viewmodel.AlarmViewModel
@@ -72,7 +75,6 @@ fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
     val context = LocalContext.current
     val alarmScheduler = remember { AlarmScheduler(context) }
 
-
     LaunchedEffect(alarms) {
             if (alarms is Response.Message) {
                 snackBarHostState.showSnackbar(
@@ -88,10 +90,15 @@ fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
         containerColor = Color(0xFF182354),
         floatingActionButton = {
             ExtendedFloatingActionButton(
-            onClick = {showTimePicker = true},
-            icon = { Icon(Icons.Filled.LocationOn, "Alarm") },
+            onClick = {
+
+                showTimePicker = true
+           },
+            icon = { Icon(painterResource(R.drawable.alarm),
+                contentDescription = "Alarm",
+                tint = Color.Black) },
             text = {
-                Text(text = "Set Alarm", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(text = stringResource(R.string.set_alarm), fontWeight = FontWeight.Bold, fontSize = 20.sp)
             },
             containerColor = Color.White
         )}
@@ -183,9 +190,9 @@ fun AlarmsList(alarm:Alarm, cityName:String, alarmViewModel: AlarmViewModel, ala
                 Spacer(modifier = Modifier.width(10.dp))
 
 
-                Text(text = "Alarm",
+                Text(text = stringResource(R.string.alarm),
                     color = Color.White,
-                    fontSize = 12.sp
+                    fontSize = 15.sp
                 )
             }
 
@@ -242,7 +249,8 @@ fun SetAlarm(
                 )
             )
             {
-                Text("Confirm",
+                Text(
+                    stringResource(R.string.confirm),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp)
             }
@@ -256,7 +264,8 @@ fun SetAlarm(
                    )
                 )
             {
-                Text("Dismiss",
+                Text(
+                    stringResource(R.string.dismiss),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp)
             }
