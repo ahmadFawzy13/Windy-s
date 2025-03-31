@@ -31,22 +31,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.example.windy.alarm.view.AlarmScreen
-import com.example.windy.alarm.viewmodel.MyAlarmFactory
-import com.example.windy.alarm.view.SetAlarm
-import com.example.windy.data.repo.Repository
-import com.example.windy.favourite.view.FavouriteScreen
-import com.example.windy.favourite.view.MapScreen
-import com.example.windy.favourite.viewmodel.MyFavFactory
-import com.example.windy.home.view.HomeScreen
-import com.example.windy.home.viewmodel.MyHomeFactory
-import com.example.windy.settings.view.MapScreenSettings
-import com.example.windy.settings.view.SettingsScreen
 
 const val REQUEST_LOCATION_CODE = 134
 const val REQUEST_NOTIFICATIONS_CODE = 567
@@ -62,52 +46,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-
             locationState = remember{mutableStateOf(Location(LocationManager.GPS_PROVIDER))}
-            val navController = rememberNavController()
-            NavHost(navController = navController,
-                startDestination = NavigationRoute.Home) {
 
-                composable<NavigationRoute.HomeFav>{ params->
+            WeatherAppScreens(locationState)
 
-                    val data =params.toRoute<NavigationRoute.HomeFav>()
-                    val favLat = data.favLat
-                    val favLon = data.favLon
-
-                    HomeScreen(navController,
-                        viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),
-                        locationState.value,
-                        favLat,favLon)
-                }
-
-                composable <NavigationRoute.Home>{params ->
-                    HomeScreen(navController,
-                        viewModel(factory = MyHomeFactory(Repository.getInstance(this@MainActivity))),
-                        locationState.value)
-                }
-
-                composable <NavigationRoute.Favourite>{
-                    FavouriteScreen(navController,viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
-                }
-
-                composable<NavigationRoute.Map> {
-                    MapScreen(viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
-                }
-
-                composable <NavigationRoute.Alarm> {
-                    AlarmScreen(navController,viewModel(factory = MyAlarmFactory(Repository.getInstance(this@MainActivity))))
-                }
-
-                composable <NavigationRoute.SetAlarm> {
-                    SetAlarm()
-                }
-                composable <NavigationRoute.Settings> {
-                    SettingsScreen(navController)
-                }
-                composable <NavigationRoute.MapSettings> {
-                    MapScreenSettings(viewModel(factory = MyFavFactory(Repository.getInstance(this@MainActivity))))
-                }
-            }
         }
     }
 
@@ -242,10 +184,8 @@ class MainActivity : ComponentActivity() {
 
     }
     private fun isAlarmsAndRemindersEnabled():Boolean{
-
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         return alarmManager.canScheduleExactAlarms()
-
     }
     private fun enableAlarmsAndReminders(){
         val intent = Intent (Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)

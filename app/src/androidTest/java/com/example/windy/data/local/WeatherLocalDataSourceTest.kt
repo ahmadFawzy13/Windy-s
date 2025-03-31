@@ -7,14 +7,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import androidx.test.filters.SmallTest
+import com.example.windy.data.model.City
+import com.example.windy.data.model.Coordinates
 import junit.framework.TestCase.assertNotNull
-import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.greaterThan
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,6 +25,17 @@ class WeatherLocalDataSourceTest {
 
     private lateinit var db : WeatherDataBase
     private lateinit var weatherLocalDataSource: WeatherLocalDataSource
+
+    val city = City(
+        id = 1,
+        name = "fakeName",
+        coord = Coordinates(2.0,30.25),
+        country = "fakeCountry",
+        population = 20,
+        timezone = 1,
+        sunrise = 8,
+        sunset = 6,
+    )
 
     @Before
     fun setup(){
@@ -42,25 +52,22 @@ class WeatherLocalDataSourceTest {
 
     @Test
     fun getFavCityLocal_insertedCity_sameCity()= runTest{
-        val favCity = FavCity(1,"Cairo",123.0,
-            321.0,"Egypt",1,2,3)
-        weatherLocalDataSource.insertFavCityLocal(favCity)
+
+        weatherLocalDataSource.insertFavCityLocal(city)
 
         val result = weatherLocalDataSource.getFavCitiesLocal().first()
 
         assertNotNull(result)
-        assertThat(result[0],`is`(favCity))
+        assertThat(result[0],`is`(city))
 
     }
 
 
     @Test
     fun deleteFavCity_insertedCity_greaterThanZero()=runTest{
-        val favCity = FavCity(1,"Cairo",123.0,
-            321.0,"Egypt",1,2,3)
-        weatherLocalDataSource.insertFavCityLocal(favCity)
+        weatherLocalDataSource.insertFavCityLocal(city)
 
-        val result = weatherLocalDataSource.deleteFavCityLocal(favCity.id)
+        val result = weatherLocalDataSource.deleteFavCityLocal(city)
         assertNotNull(result)
         assertThat(result,greaterThan(0))
 

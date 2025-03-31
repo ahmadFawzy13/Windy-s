@@ -16,16 +16,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.navigation.NavController
 import com.example.windy.home.viewmodel.HomeViewModel
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,7 +44,6 @@ import com.example.windy.WeatherSettings
 import com.example.windy.utils.SharedCityName
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
-import com.example.windy.utils.NavBar
 import com.example.windy.utils.WeatherIconLink
 import com.example.windy.utils.convertUnixTimeToTime
 import com.example.windy.utils.formatDate
@@ -55,8 +51,7 @@ import com.example.windy.utils.getCountryName
 import com.example.windy.utils.getDayName
 
 @Composable
-fun HomeScreen(navController: NavController,
-               homeViewModel: HomeViewModel,
+fun HomeScreen(homeViewModel: HomeViewModel,
                location:Location,
                favLat: String = "",
                favLon:String=""){
@@ -142,18 +137,9 @@ fun HomeScreen(navController: NavController,
             }
         }
     }
-
-        Scaffold(
-            snackbarHost = { SnackbarHost(snackBarHostState) },
-            bottomBar = { NavBar(navController) },
-            containerColor = Color(0xFF182354)
-
-        )
-        { contentPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(contentPadding)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.Center
             )
@@ -179,7 +165,7 @@ fun HomeScreen(navController: NavController,
                     }
                 }
             }
-    }
+
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)

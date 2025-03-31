@@ -7,7 +7,6 @@ import androidx.room.TypeConverters
 import com.example.windy.utils.CoordinatesTypeConverter
 import com.example.windy.data.model.Alarm
 import com.example.windy.data.model.City
-import com.example.windy.data.model.FavCity
 
 
 @Database(entities = [City::class, Alarm::class], version = 1)

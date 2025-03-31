@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,11 +68,14 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
+fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel,floatingActionButtonAction : MutableState<(()->Unit)?>){
     favViewModel.getLocalFavCities()
     val favCities = favViewModel.favCities.collectAsStateWithLifecycle().value
     val snackBarHostState = remember { SnackbarHostState() }
 
+    floatingActionButtonAction.value = {
+        navController.navigate(NavigationRoute.Map)
+    }
 
     LaunchedEffect(favCities) {
        if (favCities is Response.Message) {
@@ -82,27 +86,9 @@ fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
        }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackBarHostState)},
-        bottomBar = { NavBar(navController) },
-        containerColor = Color(0xFF182354),
-        floatingActionButton = { ExtendedFloatingActionButton(
-            onClick = {
-                navController.navigate(NavigationRoute.Map)
-            },
-            icon = { Icon(Icons.Filled.LocationOn, "Maps") },
-            text = {
-                Text(text = stringResource(R.string.maps), fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            },
-            containerColor = Color.White
-        ) }
-
-    )
-    {contentPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(contentPadding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center
         )
@@ -128,7 +114,6 @@ fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel){
                }
            }
         }
-    }
 }
 
 @Composable

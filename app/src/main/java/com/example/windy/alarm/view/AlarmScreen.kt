@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,6 +34,7 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,18 +63,20 @@ import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
+fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel,floatingActionButtonAction : MutableState<(()->Unit)?>){
+
+
     alarmViewModel.getAlarms()
     val snackBarHostState = remember { SnackbarHostState() }
-    val hour = remember { mutableIntStateOf(0) }
-    val minute = remember { mutableIntStateOf(0) }
     val alarms = alarmViewModel.alarms.collectAsStateWithLifecycle().value
     var showTimePicker by remember {mutableStateOf(false)}
     var cityName by remember { mutableStateOf("") }
     cityName = SharedCityName.cityName
     val context = LocalContext.current
     val alarmScheduler = remember { AlarmScheduler(context) }
-
+    floatingActionButtonAction.value = {
+        showTimePicker = true
+    }
     LaunchedEffect(alarms) {
             if (alarms is Response.Message) {
                 snackBarHostState.showSnackbar(
@@ -84,31 +86,11 @@ fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackBarHostState)},
-        bottomBar = { NavBar(navController) },
-        containerColor = Color(0xFF182354),
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-            onClick = {
 
-                showTimePicker = true
-           },
-            icon = { Icon(painterResource(R.drawable.alarm),
-                contentDescription = "Alarm",
-                tint = Color.Black) },
-            text = {
-                Text(text = stringResource(R.string.set_alarm), fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            },
-            containerColor = Color.White
-        )}
-
-    )
-    {contentPadding ->
 
         Box(modifier = Modifier
             .fillMaxSize()
-            .padding(contentPadding))
+        )
         {
             Log.i("TAG", "AlarmScreen: before when")
 
@@ -148,12 +130,16 @@ fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel){
             }
 
         }
-    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmsList(alarm:Alarm, cityName:String, alarmViewModel: AlarmViewModel, alarmScheduler: AlarmScheduler){
+fun AlarmsList(alarm:Alarm,
+               cityName:String,
+               alarmViewModel: AlarmViewModel,
+               alarmScheduler: AlarmScheduler){
+
 
     Card(modifier = Modifier
         .padding(10.dp)

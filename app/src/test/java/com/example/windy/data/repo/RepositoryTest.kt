@@ -38,6 +38,17 @@ class RepositoryTest {
         timezone = -18000
     )
 
+    val city = City(
+        id = 1,
+        name = "fakeName",
+        coord = Coordinates(2.0,30.25),
+        country = "fakeCountry",
+        population = 20,
+        timezone = 1,
+        sunrise = 8,
+        sunset = 6,
+    )
+
     val cityList : List<City> = listOf(
         City(
             id = 1,
@@ -73,17 +84,18 @@ class RepositoryTest {
             mockWeatherRemoteDataSource.getCurrentWeatherRemote(
                 "52.5200",
                 "13.4050",
-                "metric"
+                "metric",
+                "en"
             )
         } returns flowOf(currentWeatherResponse)
         coEvery { mockLocalDataSource.getFavCitiesLocal() } returns flowOf(cityList)
-        coEvery { mockLocalDataSource.deleteFavCityLocal(654) } returns 1
+        coEvery { mockLocalDataSource.deleteFavCityLocal(city) } returns 1
     }
 
     @Test
     fun getCurrentWeatherRemote_returnsRemoteDataFromRemote() = runTest {
 
-        val result=repo.getCurrentWeatherRemote("52.5200", "13.4050", "metric").first()
+        val result=repo.getCurrentWeatherRemote("52.5200", "13.4050", "metric","en").first()
 
         assertThat(result, IsEqual(currentWeatherResponse))
 
@@ -91,7 +103,8 @@ class RepositoryTest {
             mockWeatherRemoteDataSource.getCurrentWeatherRemote(
                 "52.5200",
                 "13.4050",
-                "metric"
+                "metric",
+                "en"
             )
         }
     }
@@ -108,10 +121,10 @@ class RepositoryTest {
     @Test
     fun deleteFavCityLocal_returnsSuccessCodeFromLocal() = runTest {
 
-        var result = repo.deleteFavCityLocal(654)
+        var result = repo.deleteFavCityLocal(city)
 
         assertThat(result, Matchers.greaterThan(0))
-        coVerify { mockLocalDataSource.deleteFavCityLocal(654) }
+        coVerify { mockLocalDataSource.deleteFavCityLocal(city) }
     }
 
 }

@@ -22,6 +22,7 @@ import org.junit.Before
 import org.junit.Test
 
 class FavouriteViewModelTest {
+
     val currentWeatherResponse = CurrentWeatherResponse(
         weather = listOf(Weather(id = 800, main = "Clear", description = "clear sky", icon = "01d")),
         weatherDetails = WeatherDetails(temp = 25.0, pressure = 1012, humidity = 60),
@@ -68,7 +69,8 @@ class FavouriteViewModelTest {
         coEvery { stubRepository.getCurrentWeatherRemote(
             "52.5200",
             "13.4050",
-            "metric")
+            "metric",
+            "en")
         } returns flowOf(currentWeatherResponse)
 
         coEvery {stubRepository.getFavCitiesLocal()} returns flowOf(cityList)
@@ -80,7 +82,7 @@ class FavouriteViewModelTest {
     fun getRemoteFavCityCurrentWeather_StateFlowNotNull(){
 
         //when
-        favViewModel.getRemoteFavCityCurrentWeather("52.5200","13.4050","metric")
+        favViewModel.getRemoteFavCityCurrentWeather("52.5200","13.4050","metric","en")
         val result = favViewModel.favCityCurrentWeather.value
 
         //then
@@ -88,7 +90,7 @@ class FavouriteViewModelTest {
             assertThat(result.data, not(nullValue()))
         }
 
-        coVerify { stubRepository.getCurrentWeatherRemote("52.5200", "13.4050", "metric") }
+        coVerify { stubRepository.getCurrentWeatherRemote("52.5200", "13.4050", "metric","en") }
 
     }
 

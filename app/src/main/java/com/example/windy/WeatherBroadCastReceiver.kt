@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.net.Uri
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.windy.data.repo.Repository
 import kotlinx.coroutines.CoroutineScope

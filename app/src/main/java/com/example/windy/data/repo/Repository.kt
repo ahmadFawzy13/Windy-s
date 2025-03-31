@@ -4,7 +4,6 @@ import android.content.Context
 import com.example.windy.data.local.WeatherLocalDataSource
 import com.example.windy.data.model.Alarm
 import com.example.windy.data.model.City
-import com.example.windy.data.model.FavCity
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.data.remote.WeatherRemoteDataSource
