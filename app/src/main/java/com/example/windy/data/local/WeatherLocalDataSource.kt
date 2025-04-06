@@ -3,6 +3,7 @@ package com.example.windy.data.local
 import android.content.Context
 import com.example.windy.data.model.Alarm
 import com.example.windy.data.model.City
+import com.example.windy.data.model.HomeDetails
 import kotlinx.coroutines.flow.Flow
 
 class WeatherLocalDataSource (private val weatherDao: WeatherDao){
@@ -19,6 +20,13 @@ class WeatherLocalDataSource (private val weatherDao: WeatherDao){
         return weatherDao.deleteFavCity(city)
     }
 
+    suspend fun insertHome(homeDetails: HomeDetails) : Long{
+        return weatherDao.insertHome(homeDetails)
+    }
+
+    fun getLocalHomeDetails():Flow<HomeDetails>{
+        return weatherDao.getHomeDetails()
+    }
 
     fun getAlarms():Flow<List<Alarm>>{
         return weatherDao.getAlarms()

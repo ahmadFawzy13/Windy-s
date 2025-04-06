@@ -1,6 +1,8 @@
 package com.example.windy.utils
 
+import android.content.Context
 import android.content.res.Resources
+import com.example.windy.utils.WeatherSettings
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -37,6 +39,30 @@ fun getDayName(dateStringFormat: String, isArabic: Boolean = false): String {
 
 fun systemLanguage(): String {
     return Resources.getSystem().configuration.locales[0].language
+}
+
+fun convertNumberToAppLanguage(input: String,context: Context): String {
+    val langCode = WeatherSettings.getInstance(context).getAppLanguage()
+    return when(langCode){
+        "ar" ->{
+            val arabicNumbers = mapOf(
+                '0' to '٠',
+                '1' to '١',
+                '2' to '٢',
+                '3' to '٣',
+                '4' to '٤',
+                '5' to '٥',
+                '6' to '٦',
+                '7' to '٧',
+                '8' to '٨',
+                '9' to '٩',
+                '.' to '٫'
+            )
+            input.map { arabicNumbers[it] ?: it }.joinToString("")
+        }
+        "en"-> input
+        else -> input
+    }
 }
 
 

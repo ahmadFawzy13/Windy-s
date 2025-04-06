@@ -1,9 +1,10 @@
-package com.example.windy
+package com.example.windy.alarm
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
+import com.example.windy.R
 import com.example.windy.data.model.Alarm
 import com.example.windy.utils.AlarmScheduler
 import java.util.Calendar

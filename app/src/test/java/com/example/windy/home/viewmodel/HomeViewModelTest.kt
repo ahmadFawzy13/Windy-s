@@ -11,7 +11,7 @@ import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers
 import org.junit.Before
 import org.junit.Test
-import com.example.windy.Response
+import com.example.windy.data.model.Response
 import com.example.windy.data.model.Clouds
 import com.example.windy.data.model.CountryDetails
 import com.example.windy.data.model.Weather
@@ -70,7 +70,6 @@ class HomeViewModelTest {
     @After
     fun tearDown() = Dispatchers.resetMain()
 
-
     @Test
     fun getRemoteCurrentWeather_stateFlowNotNull() = runTest{
 
@@ -85,9 +84,8 @@ class HomeViewModelTest {
         }
     }
 
-
     @Test
-    fun getRemoteFiveDayThreeHourWeather_LiveDataIsNotNull(){
+    fun getRemoteFiveDayThreeHourWeather_stateFlowIsNotNull(){
 
         //when
         homeViewModel.getRemoteFiveDayThreeHourWeather("52.5200","13.4050","metric","en")

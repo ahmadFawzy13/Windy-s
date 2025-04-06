@@ -1,4 +1,4 @@
-package com.example.windy
+package com.example.windy.data.model
 
 sealed class Response<out T> {
     data object Loading : Response<Nothing>()

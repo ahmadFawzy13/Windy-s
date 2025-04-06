@@ -3,15 +3,18 @@ package com.example.windy
 import android.location.Location
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,17 +38,20 @@ import com.example.windy.favourite.view.MapScreen
 import com.example.windy.favourite.viewmodel.MyFavFactory
 import com.example.windy.home.view.HomeScreen
 import com.example.windy.home.viewmodel.MyHomeFactory
+import com.example.windy.navigation.NavigationRoute
 import com.example.windy.settings.view.MapScreenSettings
 import com.example.windy.settings.view.SettingsScreen
 import com.example.windy.utils.NavBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeatherAppScreens(locationState: MutableState<Location>){
+fun WeatherAppScreens(locationState: MutableState<Location>, isNetworkAvailable:Boolean?){
+
     val context = LocalContext.current
     val navController = rememberNavController()
     val snackBarHostState = remember { SnackbarHostState() }
     var floatingActionButtonAction : MutableState<(()->Unit)?> = remember { mutableStateOf(null) }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) },
         bottomBar = { NavBar(navController) },
@@ -56,41 +62,51 @@ fun WeatherAppScreens(locationState: MutableState<Location>){
                     onClick = {
                         floatingActionButtonAction.value?.invoke()
                     },
-                    icon = { Icon(Icons.Filled.LocationOn, "Maps") },
+                    icon = { Icon(Icons.Filled.AddCircle, "Add") },
                     text = {
-                        Text(text = stringResource(R.string.maps), fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                        Text(text = stringResource(R.string.add), fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     },
                     containerColor = Color.White
                 )
             }
         }
-
     ){paddingContent->
+
+        LaunchedEffect(isNetworkAvailable) {
+            when(isNetworkAvailable){
+                true -> {}
+                false -> {snackBarHostState.showSnackbar(
+                    message = context.getString(R.string.windy_is_offline),
+                    duration = SnackbarDuration.Long
+                )}
+                else -> {}
+            }
+        }
 
         NavHost(navController = navController,
             startDestination = NavigationRoute.Home,
             modifier = Modifier.padding(paddingContent)) {
 
             composable<NavigationRoute.HomeFav>{ params->
-
+                floatingActionButtonAction.value = null
                 val data =params.toRoute<NavigationRoute.HomeFav>()
                 val favLat = data.favLat
                 val favLon = data.favLon
 
                 HomeScreen(viewModel(factory = MyHomeFactory(Repository.getInstance(context))),
                     locationState.value,
-                    favLat,favLon)
+                    favLat,favLon,isNetworkAvailable = isNetworkAvailable)
             }
 
-            composable <NavigationRoute.Home>{params ->
+            composable <NavigationRoute.Home>{ params ->
                 floatingActionButtonAction.value = null
                 HomeScreen(viewModel(factory = MyHomeFactory(Repository.getInstance(context))),
-                    locationState.value)
+                    locationState.value, isNetworkAvailable = isNetworkAvailable)
 
             }
 
             composable <NavigationRoute.Favourite>{
-                FavouriteScreen(navController,viewModel(factory = MyFavFactory(Repository.getInstance(context))),floatingActionButtonAction)
+                FavouriteScreen(navController,viewModel(factory = MyFavFactory(Repository.getInstance(context))),floatingActionButtonAction,snackBarHostState)
             }
 
             composable<NavigationRoute.Map> {
@@ -99,7 +115,7 @@ fun WeatherAppScreens(locationState: MutableState<Location>){
             }
 
             composable <NavigationRoute.Alarm> {
-                AlarmScreen(navController,viewModel(factory = MyAlarmFactory(Repository.getInstance(context))),floatingActionButtonAction)
+                AlarmScreen(viewModel(factory = MyAlarmFactory(Repository.getInstance(context))),floatingActionButtonAction)
             }
 
             composable <NavigationRoute.SetAlarm> {

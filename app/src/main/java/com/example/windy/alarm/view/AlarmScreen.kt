@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -53,23 +54,26 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.windy.R
 import com.example.windy.utils.AlarmScheduler
-import com.example.windy.Response
+import com.example.windy.data.model.Response
 import com.example.windy.alarm.viewmodel.AlarmViewModel
 import com.example.windy.utils.SharedCityName
 import com.example.windy.data.model.Alarm
+import com.example.windy.utils.HandleNegativeAction
 import com.example.windy.utils.NavBar
 import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel,floatingActionButtonAction : MutableState<(()->Unit)?>){
+fun AlarmScreen(
+    alarmViewModel: AlarmViewModel,
+    floatingActionButtonAction: MutableState<(() -> Unit)?>,
+) {
 
 
     alarmViewModel.getAlarms()
-    val snackBarHostState = remember { SnackbarHostState() }
     val alarms = alarmViewModel.alarms.collectAsStateWithLifecycle().value
-    var showTimePicker by remember {mutableStateOf(false)}
+    var showTimePicker by remember { mutableStateOf(false) }
     var cityName by remember { mutableStateOf("") }
     cityName = SharedCityName.cityName
     val context = LocalContext.current
@@ -77,94 +81,103 @@ fun AlarmScreen(navController: NavController,alarmViewModel: AlarmViewModel,floa
     floatingActionButtonAction.value = {
         showTimePicker = true
     }
-    LaunchedEffect(alarms) {
-            if (alarms is Response.Message) {
-                snackBarHostState.showSnackbar(
-                    message = alarms.msg,
-                    duration = SnackbarDuration.Short
-            )
-        }
-    }
 
-
-
-        Box(modifier = Modifier
+    Box(
+        modifier = Modifier
             .fillMaxSize()
-        )
-        {
-            Log.i("TAG", "AlarmScreen: before when")
-
-            when{
-                alarms is Response.Success ->{
-                    LazyColumn{
-                        items (alarms.data.size) {
-                            AlarmsList(alarms.data[it],cityName,alarmViewModel,alarmScheduler)
-                        }
-                    }
-                }
-
-               alarms is Response.Loading -> {
-                    Row(modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        CircularProgressIndicator(modifier = Modifier.size(100.dp))
-
+    )
+    {
+        when {
+            alarms is Response.Success -> {
+                LazyColumn {
+                    items(alarms.data.size) {
+                        AlarmsList(alarms.data[it], cityName, alarmViewModel, alarmScheduler)
                     }
                 }
             }
 
-            if(showTimePicker){
-                SetAlarm(onConfirm = { alarm->
+            alarms is Response.Loading -> {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    CircularProgressIndicator(modifier = Modifier.size(100.dp))
+
+                }
+            }
+        }
+
+        if (showTimePicker) {
+            SetAlarm(
+                onConfirm = { alarm ->
                     Log.i("TAG", "AlarmScreen: ${alarm.hour} ${alarm.minute}")
-                    val alarmObj = Alarm(cityName = cityName,hour = alarm.hour,minute = alarm.minute)
+                    val alarmObj =
+                        Alarm(cityName = cityName, hour = alarm.hour, minute = alarm.minute)
                     alarmViewModel.insertAlarm(alarmObj)
                     alarmScheduler.setAlarm(alarmObj)
 
                     showTimePicker = false
                 },
-                    onDismiss = {
-                        showTimePicker = false
-                    })
-            }
-
+                onDismiss = {
+                    showTimePicker = false
+                })
         }
+
+    }
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmsList(alarm:Alarm,
-               cityName:String,
-               alarmViewModel: AlarmViewModel,
-               alarmScheduler: AlarmScheduler){
+fun AlarmsList(
+    alarm: Alarm,
+    cityName: String,
+    alarmViewModel: AlarmViewModel,
+    alarmScheduler: AlarmScheduler
+) {
 
+    val showDialog = remember { mutableStateOf(false) }
+    if (showDialog.value) {
+        HandleNegativeAction(
+            onDismissRequest = { showDialog.value = false },
+            onConfirmation = {
+                alarmViewModel.deleteAlarm(alarm)
+                alarmScheduler.cancelAlarm(alarm.id)
+                showDialog.value = false
+            },
+            dialogTitle = stringResource(R.string.cancel_alarm),
+            dialogText = stringResource(R.string.are_you_sure_you_want_to_cancel_alarm),
+            icon = Icons.Default.Warning
+        )
+    }
 
-    Card(modifier = Modifier
-        .padding(10.dp)
-        .fillMaxWidth(),
+    Card(
+        modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
     )
     {
-        Row (
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
 
-            Icon(imageVector = Icons.Filled.Delete,
+            Icon(
+                imageVector = Icons.Filled.Delete,
                 contentDescription = "Delete",
                 tint = Color.White,
-                modifier = Modifier.clickable{
-                    alarmViewModel.deleteAlarm(alarm)
-                    alarmScheduler.cancelAlarm(alarm.id)
+                modifier = Modifier.clickable {
+                    showDialog.value = true
                 })
 
             Spacer(modifier = Modifier.width(15.dp))
 
-            Column ()
+            Column()
             {
                 Text(
                     text = ("${alarm.hour}:${alarm.minute}"),
@@ -176,13 +189,14 @@ fun AlarmsList(alarm:Alarm,
                 Spacer(modifier = Modifier.width(10.dp))
 
 
-                Text(text = stringResource(R.string.alarm),
+                Text(
+                    text = stringResource(R.string.alarm),
                     color = Color.White,
                     fontSize = 15.sp
                 )
             }
 
-            Spacer(modifier = Modifier.padding(10.dp ))
+            Spacer(modifier = Modifier.padding(10.dp))
 
             Text(
                 text = alarm.cityName,
@@ -197,7 +211,7 @@ fun AlarmsList(alarm:Alarm,
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SetAlarm(
-    onConfirm: (TimePickerState) -> Unit = { timeState->},
+    onConfirm: (TimePickerState) -> Unit = { timeState -> },
     onDismiss: () -> Unit = {}
 ) {
     val currentTime = Calendar.getInstance()
@@ -219,16 +233,17 @@ fun SetAlarm(
         contentAlignment = Alignment.Center,
 
 
-    ){
+        ) {
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally){
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             TimePicker(
                 state = timePickerState,
             )
 
-            Button(onClick =
-                {onConfirm(timePickerState)},
-                enabled =!isInvalidTime,
+            Button(
+                onClick =
+                    { onConfirm(timePickerState) },
+                enabled = !isInvalidTime,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
                     contentColor = Color.Black
@@ -238,22 +253,25 @@ fun SetAlarm(
                 Text(
                     stringResource(R.string.confirm),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp)
+                    fontSize = 20.sp
+                )
             }
 
             Spacer(modifier = Modifier.padding(10.dp))
 
-            Button(onClick = onDismiss,
-                   colors = ButtonDefaults.buttonColors(
-                       containerColor = Color.White,
-                       contentColor = Color.Black
-                   )
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Color.Black
                 )
+            )
             {
                 Text(
                     stringResource(R.string.dismiss),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp)
+                    fontSize = 20.sp
+                )
             }
         }
     }

@@ -3,6 +3,7 @@ package com.example.windy
 import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
+import com.example.windy.utils.WeatherSettings
 import java.util.Locale
 
 class MyWeatherApp : Application() {

@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.windy.data.local.WeatherLocalDataSource
 import com.example.windy.data.model.Alarm
 import com.example.windy.data.model.City
+import com.example.windy.data.model.HomeDetails
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.data.remote.WeatherRemoteDataSource
@@ -52,6 +53,14 @@ class Repository (private val localDataSource: WeatherLocalDataSource,
 
     suspend fun deleteAlarmById(alarmId:Int){
         return localDataSource.deleteAlarmById(alarmId)
+    }
+
+    suspend fun insertHome(homeDetails: HomeDetails):Long{
+        return localDataSource.insertHome(homeDetails)
+    }
+
+    fun getLocalHomeDetails():Flow<HomeDetails>{
+        return localDataSource.getLocalHomeDetails()
     }
 
 

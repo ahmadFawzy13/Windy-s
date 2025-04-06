@@ -24,16 +24,16 @@ class WeatherRemoteDataSource private constructor(private val service: WeatherAp
     suspend fun getPlaceOnMap(searchText: String, placesClient: PlacesClient) : Flow<LatLng>{
 
         var placeCoordinates : LatLng = LatLng(20.0,20.0)
-        // 1. Find predictions
+
         val request = FindAutocompletePredictionsRequest.builder()
             .setQuery(searchText)
             .build()
 
         placesClient.findAutocompletePredictions(request)
             .addOnSuccessListener { response ->
-                // Take the first prediction
+
                 response.autocompletePredictions.firstOrNull()?.let { prediction ->
-                    // 2. Get place details
+
                     val receivedInfo = listOf(Place.Field.LAT_LNG)
                     val placeRequest = FetchPlaceRequest.builder(
                         prediction.placeId,

@@ -1,4 +1,4 @@
-package com.example.windy
+package com.example.windy.navigation
 
 import kotlinx.serialization.Serializable
 

@@ -1,6 +1,5 @@
 package com.example.windy.favourite.view
 
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,26 +17,24 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,12 +48,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.windy.NavigationRoute
+import com.example.windy.navigation.NavigationRoute
 import com.example.windy.R
-import com.example.windy.Response
+import com.example.windy.data.model.Response
 import com.example.windy.data.model.City
 import com.example.windy.favourite.viewmodel.FavViewModel
-import com.example.windy.utils.NavBar
+import com.example.windy.utils.HandleNegativeAction
 import com.example.windy.utils.getCountryName
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -68,87 +65,100 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun FavouriteScreen(navController: NavController,favViewModel: FavViewModel,floatingActionButtonAction : MutableState<(()->Unit)?>){
+fun FavouriteScreen(
+    navController: NavController,
+    favViewModel: FavViewModel,
+    floatingActionButtonAction: MutableState<(() -> Unit)?>,
+    snackBarHostState: SnackbarHostState
+) {
     favViewModel.getLocalFavCities()
     val favCities = favViewModel.favCities.collectAsStateWithLifecycle().value
-    val snackBarHostState = remember { SnackbarHostState() }
+
 
     floatingActionButtonAction.value = {
         navController.navigate(NavigationRoute.Map)
     }
 
-    LaunchedEffect(favCities) {
-       if (favCities is Response.Message) {
-           snackBarHostState.showSnackbar(
-               message = favCities.msg,
-               duration = SnackbarDuration.Short
-           )
-       }
-    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
+    )
+    {
+        when {
+            favCities is Response.Success -> {
+                LazyColumn {
+                    items(favCities.data.size) {
+                        FavCities(favCities.data[it], favViewModel, navController)
+                    }
+                }
+            }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
-        )
-        {
-           when{
-              favCities is Response.Success -> {
-                   LazyColumn {
-                       items(favCities.data.size){
-                           FavCities(favCities.data[it],favViewModel,navController)
-                       }
-                   }
-               }
+            favCities is Response.Loading -> {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-               favCities is Response.Loading ->{
-                   Row(modifier = Modifier.fillMaxSize(),
-                       horizontalArrangement = Arrangement.Center,
-                       verticalAlignment = Alignment.CenterVertically
-                   ) {
+                    CircularProgressIndicator(modifier = Modifier.size(100.dp))
 
-                       CircularProgressIndicator(modifier = Modifier.size(100.dp))
-
-                   }
-               }
-           }
+                }
+            }
         }
+    }
 }
 
 @Composable
-fun FavCities(city: City,favViewModel: FavViewModel,navController: NavController){
+fun FavCities(city: City, favViewModel: FavViewModel, navController: NavController) {
 
     val countryName = getCountryName(city.country)
     val lat = city.coord.lat.toString()
     val lon = city.coord.lon.toString()
+    val showDialog = remember { mutableStateOf(false) }
 
-    Card(modifier = Modifier
-        .padding(10.dp)
-        .fillMaxWidth()
-        .clickable {
-            navController.navigate(NavigationRoute.HomeFav(lat, lon))
-        },
+    if (showDialog.value) {
+        HandleNegativeAction(
+            onDismissRequest = { showDialog.value = false },
+            onConfirmation = {
+                favViewModel.deleteFavCity(city)
+                showDialog.value = false
+            },
+            dialogTitle = "Remove city",
+            dialogText = "Are you sure you want to favourite?",
+            icon = Icons.Default.Warning
+        )
+    }
+    Card(
+        modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth()
+            .clickable {
+                navController.navigate(NavigationRoute.HomeFav(lat, lon))
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
     )
     {
-        Row (
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
 
-            Icon(imageVector = Icons.Filled.Delete,
+            Icon(
+                imageVector = Icons.Filled.Delete,
                 contentDescription = "Delete",
                 tint = Color.White,
-                modifier = Modifier.clickable{
-                    favViewModel.deleteFavCity(city)
+                modifier = Modifier.clickable {
+                    showDialog.value = true
                 })
 
             Spacer(modifier = Modifier.width(15.dp))
 
-            Text(text = countryName,
+            Text(
+                text = countryName,
                 color = Color.White,
                 fontSize = 25.sp
             )
@@ -169,11 +179,11 @@ fun FavCities(city: City,favViewModel: FavViewModel,navController: NavController
 @Composable
 fun MapScreen(favViewModel: FavViewModel) {
 
-    val fiveDayThreeHourWeather = favViewModel.
-    fiveDayFavCityWeather.collectAsStateWithLifecycle().value
+    val fiveDayThreeHourWeather =
+        favViewModel.fiveDayFavCityWeather.collectAsStateWithLifecycle().value
 
-    val searchPlaceCoordinates = favViewModel.searchPlaceCoordinates.
-    collectAsStateWithLifecycle().value
+    val searchPlaceCoordinates =
+        favViewModel.searchPlaceCoordinates.collectAsStateWithLifecycle(Response.Loading).value
 
     var searchText by remember { mutableStateOf("") }
     var selectedLatLng by remember { mutableStateOf<LatLng?>(null) }
@@ -188,7 +198,7 @@ fun MapScreen(favViewModel: FavViewModel) {
 
     val places = remember { Places.createClient(context) }
 
-    favViewModel.getPlaceOnMap(searchText,places)
+    favViewModel.getPlaceOnMap(searchText, places)
 
     Box(modifier = Modifier.fillMaxSize()) {
         LocationPickerMap(
@@ -198,15 +208,14 @@ fun MapScreen(favViewModel: FavViewModel) {
             }
         )
 
-
         TextField(
             value = searchText,
             onValueChange = { searchText = it },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
             keyboardActions = KeyboardActions(onGo = {
 
-                if(searchPlaceCoordinates is Response.Success){
-                    selectedLatLng   = searchPlaceCoordinates.data
+                if (searchPlaceCoordinates is Response.Success) {
+                    selectedLatLng = searchPlaceCoordinates.data
                 }
 
             }),
@@ -230,8 +239,10 @@ fun MapScreen(favViewModel: FavViewModel) {
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
             ) {
 
-                Box(modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center)
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                )
                 {
 
                     Button(
@@ -249,7 +260,11 @@ fun MapScreen(favViewModel: FavViewModel) {
                                 }
 
                             }
-                        }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Black,
+                            contentColor = Color.White
+                        )
                     ) {
 
                         Icon(Icons.Outlined.Favorite, contentDescription = "Add to fav")
@@ -265,11 +280,11 @@ fun MapScreen(favViewModel: FavViewModel) {
 
 @Composable
 fun LocationPickerMap(
-    selectedLocation :LatLng?,
+    selectedLocation: LatLng?,
     onLocationSelected: (LatLng) -> Unit
 ) {
 
-    val defaultLocation = remember {LatLng(30.0381736, 30.9793528) }
+    val defaultLocation = remember { LatLng(30.0381736, 30.9793528) }
 
     var currentLocation = selectedLocation ?: defaultLocation
 
@@ -280,7 +295,7 @@ fun LocationPickerMap(
     LaunchedEffect(currentLocation) {
         selectedLocation?.let {
             cameraPositionState.animate(
-                update = CameraUpdateFactory.newLatLngZoom(currentLocation,10f)
+                update = CameraUpdateFactory.newLatLngZoom(currentLocation, 10f)
             )
         }
     }

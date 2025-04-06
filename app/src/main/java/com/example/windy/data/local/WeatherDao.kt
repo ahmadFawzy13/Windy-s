@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.windy.data.model.Alarm
 import com.example.windy.data.model.City
+import com.example.windy.data.model.HomeDetails
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,6 +17,12 @@ interface WeatherDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFavCity(city: City) : Long
+
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertHome(homeDetails: HomeDetails) : Long
+
+    @Query("SELECT * FROM home")
+    fun getHomeDetails(): Flow<HomeDetails>
 
     @Delete
     suspend fun deleteFavCity(city: City) : Int

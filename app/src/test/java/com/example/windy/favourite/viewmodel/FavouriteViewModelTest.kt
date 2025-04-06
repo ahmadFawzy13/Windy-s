@@ -1,6 +1,6 @@
 package com.example.windy.favourite.viewmodel
 
-import com.example.windy.Response
+import com.example.windy.data.model.Response
 import com.example.windy.data.model.City
 import com.example.windy.data.model.Clouds
 import com.example.windy.data.model.Coordinates
@@ -76,7 +76,6 @@ class FavouriteViewModelTest {
         coEvery {stubRepository.getFavCitiesLocal()} returns flowOf(cityList)
 
     }
-
 
     @Test
     fun getRemoteFavCityCurrentWeather_StateFlowNotNull(){

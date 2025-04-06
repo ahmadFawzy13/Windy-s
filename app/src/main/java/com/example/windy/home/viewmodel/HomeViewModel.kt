@@ -3,7 +3,8 @@ package com.example.windy.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.windy.Response
+import com.example.windy.data.model.HomeDetails
+import com.example.windy.data.model.Response
 import com.example.windy.data.remote.CurrentWeatherResponse
 import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.example.windy.data.repo.Repository
@@ -21,12 +22,17 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
     val currentWeather =
         _currentWeather.asStateFlow()
 
-
     private val _fiveDayThreeHourWeather =
         MutableStateFlow<Response<FiveDayThreeHourResponse>>(Response.Loading)
 
     val fiveDayThreeHourWeather =
         _fiveDayThreeHourWeather.asStateFlow()
+
+    private val _homeScreenLocal =
+        MutableStateFlow<Response<HomeDetails>>(Response.Loading)
+
+    val homeScreenLocal =
+        _homeScreenLocal.asStateFlow()
 
     fun getRemoteCurrentWeather(lat:String,lon:String,units:String,lang:String){
         viewModelScope.launch(Dispatchers.IO) {
@@ -54,7 +60,30 @@ class HomeViewModel(val repo: Repository) : ViewModel() {
                }
         }
     }
+
+    fun insertHomeDetails(homeDetails: HomeDetails){
+        viewModelScope.launch (Dispatchers.IO){
+            try {
+                     repo.insertHome(homeDetails)
+                }catch (e: Exception){
+                    _homeScreenLocal.value = Response.Message(e.printStackTrace().toString())
+                }
+       }
+    }
+
+    fun getLocalHomeDetails(){
+        viewModelScope.launch(Dispatchers.IO) {
+            try{
+                repo.getLocalHomeDetails()
+                    .catch {_homeScreenLocal.value = Response.Message(it.printStackTrace().toString()) }
+                    .collect {_homeScreenLocal.value = Response.Success(it)}
+            }catch(e: Exception){
+                _homeScreenLocal.value = Response.Message(e.printStackTrace().toString())
+            }
+        }
+    }
 }
+
 
 class MyHomeFactory (val repo: Repository): ViewModelProvider.Factory{
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

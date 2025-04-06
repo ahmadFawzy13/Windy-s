@@ -3,7 +3,7 @@ package com.example.windy.alarm.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.windy.Response
+import com.example.windy.data.model.Response
 import com.example.windy.data.model.Alarm
 import com.example.windy.data.repo.Repository
 import kotlinx.coroutines.Dispatchers
@@ -13,8 +13,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class AlarmViewModel (val repo: Repository) : ViewModel(){
-
-
 
     private val _alarms = MutableStateFlow<Response<List<Alarm>>>(Response.Loading)
     val alarms = _alarms.asStateFlow()
@@ -36,14 +34,7 @@ class AlarmViewModel (val repo: Repository) : ViewModel(){
     fun insertAlarm(alarm: Alarm){
         viewModelScope.launch {
             try {
-                val result = repo.insertAlarm(alarm)
-                if(result > 0){
-                    _alarms.value = Response.Message("Alarm set")
-
-                }else{
-                    _alarms.value = Response.Message("Result < 0")
-                }
-
+                 repo.insertAlarm(alarm)
             }catch(e: Exception){
                 _alarms.value = Response.Message(e.printStackTrace().toString())
             }
@@ -55,16 +46,9 @@ class AlarmViewModel (val repo: Repository) : ViewModel(){
         viewModelScope.launch {
 
             try {
-                val result = repo.deleteAlarm(alarm)
-                if(result > 0){
-                    _alarms.value = Response.Message("Deleted")
-                }else{
-                    _alarms.value = Response.Message("Couldn't Delete")
-                }
+                  repo.deleteAlarm(alarm)
             }catch(e: Exception){
-
                 _alarms.value = Response.Message(e.printStackTrace().toString())
-
             }
         }
     }

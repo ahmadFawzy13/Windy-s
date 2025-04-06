@@ -2,6 +2,8 @@ package com.example.windy.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.windy.data.remote.CurrentWeatherResponse
+import com.example.windy.data.remote.FiveDayThreeHourResponse
 import com.google.gson.annotations.SerializedName
 
 data class Clouds(
@@ -54,6 +56,13 @@ data class City(
     val timezone: Int = 0,
     val sunrise: Int = 0,
     val sunset: Int = 0
+)
+
+@Entity(tableName = "home")
+data class HomeDetails(
+    @PrimaryKey val id:Int = 1,
+    val currentWeatherResponse: CurrentWeatherResponse,
+    val fiveDayThreeHourResponse: FiveDayThreeHourResponse
 )
 
 @Entity(

@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
-import com.example.windy.WeatherBroadCastReceiver
+import com.example.windy.alarm.WeatherBroadCastReceiver
 import com.example.windy.data.model.Alarm
 
 class AlarmScheduler(private val context: Context) {

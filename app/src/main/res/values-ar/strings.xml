@@ -38,4 +38,14 @@
     <string name="select_location">اختيار الموقع</string>
     <string name="weather_is_ready_for_you">طقس %1$s جاهز لك</string>
     <string name="tap_to_see_forecast">اضغط لرؤية التوقعات</string>
+    <string name="snooze">غفوة</string>
+    <string name="add">أضافة</string>
+    <string name="hpa">بسكال</string>
+    <string name="home">الرئيسية</string>
+    <string name="favourite">المفضلة</string>
+    <string name="alert">المنبه</string>
+    <string name="settings">الأعدادات</string>
+    <string name="cancel_alarm">الغاء المنبه</string>
+    <string name="are_you_sure_you_want_to_cancel_alarm">سيتم الغاء المنبه, تأكيد؟</string>
+    <string name="windy_is_offline">تم فقد الأتصال بالأنترنت</string>
 </resources>

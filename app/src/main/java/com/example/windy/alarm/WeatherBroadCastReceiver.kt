@@ -1,4 +1,4 @@
-package com.example.windy
+package com.example.windy.alarm
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,11 +9,13 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.net.Uri
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
+import com.example.windy.MainActivity
+import com.example.windy.R
 import com.example.windy.data.repo.Repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import androidx.core.net.toUri
 
 class WeatherBroadCastReceiver: BroadcastReceiver() {
 
@@ -34,15 +36,19 @@ class WeatherBroadCastReceiver: BroadcastReceiver() {
                 )
             }
 
-        val dismissIntent = Intent(context,
-            OnClickNotificationActionReceiver::class.java).apply {
+        val dismissIntent = Intent(
+            context,
+            OnClickNotificationActionReceiver::class.java
+        ).apply {
                 action = "Dismiss"
                 putExtra("alarmId",alarmId)
         }
 
 
-        val snoozeIntent = Intent(context,
-            OnClickNotificationActionReceiver::class.java).apply {
+        val snoozeIntent = Intent(
+            context,
+            OnClickNotificationActionReceiver::class.java
+        ).apply {
                 action = "Snooze"
             putExtra("alarmId",alarmId)
             putExtra("cityName",cityName)
@@ -82,7 +88,7 @@ class WeatherBroadCastReceiver: BroadcastReceiver() {
             .setUsage(AudioAttributes.USAGE_ALARM)
             .build()
 
-        val channel = NotificationChannel(CHANNEL_ID,name,importance).apply {
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
               description = notificationDesc
             setSound(notificationSong,channelSound)
         }
@@ -114,14 +120,14 @@ class WeatherBroadCastReceiver: BroadcastReceiver() {
 
        notificationManager.notify(alarmId,builder.build())
 
-        CoroutineScope(Dispatchers.IO).launch{
+        CoroutineScope(Dispatchers.IO).launch {
             deleteAlarm(context,alarmId)
         }
 
     }
 
     suspend fun deleteAlarm(context: Context, alarmId:Int){
-        val repo = Repository.getInstance(context)
+        val repo = Repository.Companion.getInstance(context)
         repo.deleteAlarmById(alarmId)
     }
 }

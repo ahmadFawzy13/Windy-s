@@ -25,11 +25,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Windy">
         <receiver
-            android:name=".OnClickNotificationActionReceiver"
+            android:name=".alarm.OnClickNotificationActionReceiver"
             android:enabled="true"
             android:exported="true"/>
         <receiver
-            android:name=".WeatherBroadCastReceiver"
+            android:name=".alarm.WeatherBroadCastReceiver"
             android:enabled="true"
             android:exported="true" />
 
